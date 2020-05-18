@@ -1,0 +1,59 @@
+= FreeIPA
+
+Deploy a FreeIPA cluster using Ansible.
+
+== Requirements
+
+- Libvirt 5.6.0+
+- Terraform 0.12.25+
+- Libvirt provider for Terraform 0.6.2+
+- Ansible 2.9.9+
+
+Install requirements.
+
+```bash
+make requirements
+```
+
+== Setup Libvirt
+
+Use `virsh` command utility to configure libvirt.
+
+```bash
+export LIBVIRT_DEFAULT_URI="qemu:///system"
+```
+
+Check if libvirt is running.
+
+```bash
+virsh version --daemon
+```
+
+=== QEMU permissions
+
+The provider does not currently support to create volumes with different mode than `root:root` so QEMU agent must run as priviledged. Set user and password in `/etc/libvirt/qemu.conf` file.
+
+```bash
+...
+user = "root"
+group = "root"
+...
+```
+
+Restart libvirt daemon.
+
+```bash
+systemctl restart libvirtd
+```
+
+== Troubleshooting
+
+Enable debug mode by setting `TF_VAR_DEBUG` to `true` before planning terraform changes.
+
+```bash
+export TF_VAR_DEBUG="true"
+```
+
+== References
+
+- https://github.com/freeipa/ansible-freeipa
