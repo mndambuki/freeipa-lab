@@ -1,0 +1,34 @@
+# Server configuration
+ipaadmin_principal: admin
+ipaadmin_password: ADMPassword1
+ipaserver_install_packages: yes
+
+# CA configuration
+ipaserver_no_pkinit: yes
+ipaserver_ca_cert_files:
+  - /root/freeipa/certificates/root-ca.crt
+
+# Directory server configuration
+ipadm_password: DMPassword1
+ipaserver_dirsrv_cert_name: dirsrv-cert
+ipaserver_dirsrv_cert_files:
+  - /root/freeipa/certificates/dirsrv.p12
+ipaserver_dirsrv_pin: ""
+
+# Apache configuration
+ipaserver_no_ui_redirect: no
+ipaserver_http_cert_name: httpd-cert
+ipaserver_http_cert_files:
+  - /root/freeipa/certificates/httpd.p12
+ipaserver_http_pin: ""
+
+# DNS configuration
+ipaserver_domain: freeipa.libvirt.int
+ipaserver_realm: FREEIPA.LIBVIRT.INT
+ipaserver_setup_dns: no
+
+# NTP configuration
+ipaclient_no_ntp: yes
+
+# Firewalld configuration
+ipaserver_setup_firewalld: no

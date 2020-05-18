@@ -31,6 +31,15 @@ variable "dns" {
   })
 }
 
+# FreeIPA inventory
+variable "freeipa_inventory" {
+  description = "List of FreeIPA cluster nodes"
+  type        = map(object({
+    ip_address  = string,
+    mac_address = string
+  }))
+}
+
 # Load balancer specification
 variable "load_balancer" {
   description = "Configuration for load balancer virtual machine"

@@ -41,6 +41,9 @@ override.tf.json
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
+# Ansible roles
+ansible/ansible-freeipa
+
 # Debug files
 
 # Confidential data

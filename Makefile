@@ -55,13 +55,13 @@ destroy: plan
 
 	@echo "Destroying infrastructure..."
 	terraform destroy \
+		-auto-approve \
 		-var-file="$(tf_variables)/default.tfvars" \
 		-var-file="$(tf_variables)/$(environment).tfvars" \
 		$(tf_files)
 	@rm -rf .terraform
 	@rm -rf output/tf.$(environment).plan
 	@rm -rf state/terraform.$(environment).tfstate
-	@rm -rf src/ssh
 
 	@echo "Restoring network configuration..."
 	@sudo chmod 755 /etc/NetworkManager/conf.d

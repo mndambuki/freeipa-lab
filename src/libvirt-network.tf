@@ -16,9 +16,9 @@ resource "libvirt_network" "freeipa" {
     local_only = true
   }
 
-  # xml {
-  #   xslt = file(format("%s/xslt/network-zone.xml", path.module))
-  # }
+  xml {
+    xslt = data.template_file.freeipa_dns_records.rendered
+  }
 
   depends_on = [
     local_file.freeipa_dnsmasq

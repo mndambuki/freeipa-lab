@@ -1,7 +1,7 @@
 #cloud-config
 hostname: ${hostname}
 fqdn: ${fqdn}
-manage_etc_hosts: true
+manage_etc_hosts: false
 ssh_pwauth: false
 disable_root: false
 users:

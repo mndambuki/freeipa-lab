@@ -1,3 +1,14 @@
+data "template_file" "freeipa_dns_records" {
+
+  template = file(format("%s/dns/freeipa-records.xml.tpl", path.module))
+
+  vars = {
+    kerberos_realm      = upper(var.dns.domain)
+    freeipa_master_ptr  = join(".", reverse(split(".", local.freeipa_master.ip_address)))
+    freeipa_master_fqdn = local.freeipa_master.fqdn
+  }
+}
+
 data "template_file" "freeipa_dnsmasq" {
 
   template = file(format("%s/dns/freeipa_dnsmasq.conf.tpl", path.module))
