@@ -44,6 +44,17 @@ write_files:
     permissions: "0640"
     encoding: b64
     content: ${httpd_private_key}
+  # PKINIT
+  - path: /root/freeipa/certificates/pkinit.crt
+    owner: root:root
+    permissions: "0644"
+    encoding: b64
+    content: ${pkinit_certificate}
+  - path: /root/freeipa/certificates/pkinit.key
+    owner: root:root
+    permissions: "0640"
+    encoding: b64
+    content: ${pkinit_private_key}
 
 # every boot
 bootcmd:
@@ -54,6 +65,7 @@ runcmd:
   - [ sh, -c, 'echo $(date) | sudo tee -a /root/runcmd.log' ]
   - [ openssl, pkcs12, -export, -name, dirsrv-cert, -out, /root/freeipa/certificates/dirsrv.p12, -passout, "pass:", -inkey, /root/freeipa/certificates/dirsrv.key, -in, /root/freeipa/certificates/dirsrv.crt, -certfile, /root/freeipa/certificates/root-ca.crt ]
   - [ openssl, pkcs12, -export, -name, httpd-cert, -out, /root/freeipa/certificates/httpd.p12, -passout, "pass:", -inkey, /root/freeipa/certificates/httpd.key, -in, /root/freeipa/certificates/httpd.crt, -certfile, /root/freeipa/certificates/root-ca.crt ]
+  - [ openssl, pkcs12, -export, -name, pkinit-cert, -out, /root/freeipa/certificates/pkinit.p12, -passout, "pass:", -inkey, /root/freeipa/certificates/pkinit.key, -in, /root/freeipa/certificates/pkinit.crt, -certfile, /root/freeipa/certificates/root-ca.crt ]
 
 # written to /var/log/cloud-init-output.log
 final_message: "The system is finall up, after $UPTIME seconds"

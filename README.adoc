@@ -8,6 +8,8 @@ Deploy a FreeIPA cluster using Ansible.
 - Terraform 0.12.25+
 - Libvirt provider for Terraform 0.6.2+
 - Ansible 2.9.9+
+- OpenSSL 1.1.1+
+- Linux password manager 1.7.3+
 
 Install requirements.
 
@@ -46,12 +48,50 @@ Restart libvirt daemon.
 systemctl restart libvirtd
 ```
 
+== Deploy infrastructure
+
+Deploy infrastructure using Terraform.
+
+```
+make
+```
+
+== Deploy FreeIPA cluster
+
+Deploy FreeIPA master using Ansible.
+
+```
+ansible-playbook ansible/playbooks/install-server.yml \
+    --inventory ansible/inventory/localhost.yml \
+    --extra-vars "@ansible/variables/localhost-no-ca.yml"
+```
+
+Deploy FreeIPA replicas.
+
+WIP
+
 == Troubleshooting
+
+=== Terraform
 
 Enable debug mode by setting `TF_VAR_DEBUG` to `true` before planning terraform changes.
 
 ```bash
 export TF_VAR_DEBUG="true"
+```
+
+=== FreeIPA
+
+Get FreeIPA password for `admin` user.
+
+```bash
+pass freeipa/localhost/ipaadmin/password
+```
+
+Get Directory server with administration capabilities.
+
+```bash
+pass freeipa/localhost/ipadm/password
 ```
 
 == References

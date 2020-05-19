@@ -26,9 +26,6 @@ resource "tls_self_signed_cert" "freeipa_root_ca" {
 }
 
 resource "local_file" "freeipa_root_ca_certificate_pem" {
-
-  count = var.DEBUG ? 1 : 0
-
   filename             = format("%s/ca/root-ca/certificate.pem", path.module)
   content              = tls_self_signed_cert.freeipa_root_ca.cert_pem
   file_permission      = "0600"
@@ -36,9 +33,6 @@ resource "local_file" "freeipa_root_ca_certificate_pem" {
 }
 
 resource "local_file" "freeipa_root_ca_private_key_pem" {
-
-  count = var.DEBUG ? 1 : 0
-
   filename             = format("%s/ca/root-ca/certificate.key", path.module)
   content              = tls_private_key.freeipa_root_ca.private_key_pem
   file_permission      = "0600"

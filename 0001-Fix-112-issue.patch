@@ -1,0 +1,291 @@
+From 6583da1d48df1fe7bfec5530d02a00511d6c1828 Mon Sep 17 00:00:00 2001
+From: Samuel Veloso <veloso.lopez.samuel@gmail.com>
+Date: Tue, 19 May 2020 11:31:06 +0200
+Subject: [PATCH] Fix #112 issue
+
+---
+ .../library/ipareplica_ds_apply_updates.py    |  4 +--
+ .../library/ipareplica_ds_enable_ssl.py       |  4 +--
+ .../library/ipareplica_krb_enable_ssl.py      |  2 +-
+ .../ipareplica/library/ipareplica_setup_ca.py |  4 +--
+ .../library/ipareplica_setup_custodia.py      |  2 +-
+ .../ipareplica/library/ipareplica_setup_ds.py |  2 +-
+ .../library/ipareplica_setup_http.py          |  2 +-
+ .../library/ipareplica_setup_krb.py           |  2 +-
+ .../library/ipaserver_set_ds_password.py      |  2 +-
+ roles/ipaserver/library/ipaserver_setup_ca.py | 12 ++++----
+ roles/ipaserver/library/ipaserver_setup_ds.py |  2 +-
+ .../ipaserver/library/ipaserver_setup_http.py |  4 +--
+ .../ipaserver/library/ipaserver_setup_krb.py  |  2 +-
+ roles/ipaserver/library/ipaserver_test.py     | 30 ++++++-------------
+ roles/ipaserver/tasks/install.yml             |  1 +
+ 15 files changed, 33 insertions(+), 42 deletions(-)
+
+diff --git a/roles/ipareplica/library/ipareplica_ds_apply_updates.py b/roles/ipareplica/library/ipareplica_ds_apply_updates.py
+index 66aecd2..3796874 100644
+--- a/roles/ipareplica/library/ipareplica_ds_apply_updates.py
++++ b/roles/ipareplica/library/ipareplica_ds_apply_updates.py
+@@ -123,8 +123,8 @@ def main():
+             ccache=dict(required=True),
+             _ca_enabled=dict(required=False, type='bool'),
+             _ca_file=dict(required=False),
+-            _dirsrv_pkcs12_info=dict(required=False),
+-            _pkinit_pkcs12_info=dict(required=False),
++            _dirsrv_pkcs12_info=dict(required=False, type='list'),
++            _pkinit_pkcs12_info=dict(required=False, type='list'),
+             _top_dir=dict(required=True),
+             dirman_password=dict(required=True, no_log=True),
+             ds_ca_subject=dict(required=True),
+diff --git a/roles/ipareplica/library/ipareplica_ds_enable_ssl.py b/roles/ipareplica/library/ipareplica_ds_enable_ssl.py
+index 88c5f0b..a1b638e 100644
+--- a/roles/ipareplica/library/ipareplica_ds_enable_ssl.py
++++ b/roles/ipareplica/library/ipareplica_ds_enable_ssl.py
+@@ -119,8 +119,8 @@ def main():
+             ccache=dict(required=True),
+             _ca_enabled=dict(required=False, type='bool'),
+             _ca_file=dict(required=False),
+-            _dirsrv_pkcs12_info=dict(required=False),
+-            _pkinit_pkcs12_info=dict(required=False),
++            _dirsrv_pkcs12_info=dict(required=False, type='list'),
++            _pkinit_pkcs12_info=dict(required=False, type='list'),
+             _top_dir=dict(required=True),
+             dirman_password=dict(required=True, no_log=True),
+             ds_ca_subject=dict(required=True),
+diff --git a/roles/ipareplica/library/ipareplica_krb_enable_ssl.py b/roles/ipareplica/library/ipareplica_krb_enable_ssl.py
+index 1a73414..a302b0f 100644
+--- a/roles/ipareplica/library/ipareplica_krb_enable_ssl.py
++++ b/roles/ipareplica/library/ipareplica_krb_enable_ssl.py
+@@ -106,7 +106,7 @@ def main():
+             ccache=dict(required=True),
+             _ca_enabled=dict(required=False, type='bool'),
+             _ca_file=dict(required=False),
+-            _pkinit_pkcs12_info=dict(required=False),
++            _pkinit_pkcs12_info=dict(required=False, type='list'),
+             _top_dir=dict(required=True),
+             dirman_password=dict(required=True, no_log=True),
+         ),
+diff --git a/roles/ipareplica/library/ipareplica_setup_ca.py b/roles/ipareplica/library/ipareplica_setup_ca.py
+index 850ceb9..d71299b 100644
+--- a/roles/ipareplica/library/ipareplica_setup_ca.py
++++ b/roles/ipareplica/library/ipareplica_setup_ca.py
+@@ -138,8 +138,8 @@ def main():
+             _ca_file=dict(required=False),
+             _kra_enabled=dict(required=False, type='bool'),
+             _kra_host_name=dict(required=False),
+-            _dirsrv_pkcs12_info=dict(required=False),
+-            _pkinit_pkcs12_info=dict(required=False),
++            _dirsrv_pkcs12_info=dict(required=False, type='list'),
++            _pkinit_pkcs12_info=dict(required=False, type='list'),
+             _top_dir=dict(required=True),
+             _ca_subject=dict(required=True),
+             _subject_base=dict(required=True),
+diff --git a/roles/ipareplica/library/ipareplica_setup_custodia.py b/roles/ipareplica/library/ipareplica_setup_custodia.py
+index e9e4047..5a74e87 100644
+--- a/roles/ipareplica/library/ipareplica_setup_custodia.py
++++ b/roles/ipareplica/library/ipareplica_setup_custodia.py
+@@ -118,7 +118,7 @@ def main():
+             _ca_file=dict(required=False),
+             _kra_enabled=dict(required=False, type='bool'),
+             _kra_host_name=dict(required=False),
+-            _pkinit_pkcs12_info=dict(required=False),
++            _pkinit_pkcs12_info=dict(required=False, type='list'),
+             _top_dir=dict(required=True),
+             dirman_password=dict(required=True, no_log=True),
+         ),
+diff --git a/roles/ipareplica/library/ipareplica_setup_ds.py b/roles/ipareplica/library/ipareplica_setup_ds.py
+index 39e3348..8a44120 100644
+--- a/roles/ipareplica/library/ipareplica_setup_ds.py
++++ b/roles/ipareplica/library/ipareplica_setup_ds.py
+@@ -190,7 +190,7 @@ def main():
+             ccache=dict(required=True),
+             installer_ccache=dict(required=True),
+             _ca_enabled=dict(required=False, type='bool'),
+-            _dirsrv_pkcs12_info=dict(required=False),
++            _dirsrv_pkcs12_info=dict(required=False, type='list'),
+             _top_dir=dict(required=True),
+             _add_to_ipaservers=dict(required=True, type='bool'),
+             _ca_subject=dict(required=True),
+diff --git a/roles/ipareplica/library/ipareplica_setup_http.py b/roles/ipareplica/library/ipareplica_setup_http.py
+index a33587c..987ea95 100644
+--- a/roles/ipareplica/library/ipareplica_setup_http.py
++++ b/roles/ipareplica/library/ipareplica_setup_http.py
+@@ -115,7 +115,7 @@ def main():
+             ccache=dict(required=True),
+             _ca_enabled=dict(required=False, type='bool'),
+             _ca_file=dict(required=False),
+-            _http_pkcs12_info=dict(required=False),
++            _http_pkcs12_info=dict(required=False, type='list'),
+             _top_dir=dict(required=True),
+             dirman_password=dict(required=True, no_log=True),
+         ),
+diff --git a/roles/ipareplica/library/ipareplica_setup_krb.py b/roles/ipareplica/library/ipareplica_setup_krb.py
+index 7763f76..c8d09f7 100644
+--- a/roles/ipareplica/library/ipareplica_setup_krb.py
++++ b/roles/ipareplica/library/ipareplica_setup_krb.py
+@@ -96,7 +96,7 @@ def main():
+             # additional
+             config_master_host_name=dict(required=True),
+             ccache=dict(required=True),
+-            _pkinit_pkcs12_info=dict(required=False),
++            _pkinit_pkcs12_info=dict(required=False, type='list'),
+             _top_dir=dict(required=True),
+         ),
+         supports_check_mode=True,
+diff --git a/roles/ipaserver/library/ipaserver_set_ds_password.py b/roles/ipaserver/library/ipaserver_set_ds_password.py
+index 0077302..4b5b3b3 100644
+--- a/roles/ipaserver/library/ipaserver_set_ds_password.py
++++ b/roles/ipaserver/library/ipaserver_set_ds_password.py
+@@ -127,7 +127,7 @@ def main():
+             no_hbac_allow=dict(required=False, type='bool', default=False),
+             no_pkinit=dict(required=False, type='bool', default=False),
+             dirsrv_config_file=dict(required=False),
+-            _dirsrv_pkcs12_info=dict(required=False),
++            _dirsrv_pkcs12_info=dict(required=False, type='list'),
+             # ssl certificate
+             dirsrv_cert_files=dict(required=False, type='list', default=[]),
+             subject_base=dict(required=False),
+diff --git a/roles/ipaserver/library/ipaserver_setup_ca.py b/roles/ipaserver/library/ipaserver_setup_ca.py
+index faaf660..42b81c0 100644
+--- a/roles/ipaserver/library/ipaserver_setup_ca.py
++++ b/roles/ipaserver/library/ipaserver_setup_ca.py
+@@ -191,7 +191,7 @@ def main():
+             no_pkinit=dict(required=False, type='bool', default=False),
+             dirsrv_config_file=dict(required=False),
+             dirsrv_cert_files=dict(required=False, type='list'),
+-            _dirsrv_pkcs12_info=dict(required=False),
++            _dirsrv_pkcs12_info=dict(required=False, type='list'),
+             # certificate system
+             external_ca=dict(required=False, type='bool', default=False),
+             external_ca_type=dict(required=False),
+@@ -322,18 +322,20 @@ def main():
+                                      csr_generated=True)
+     else:
+         # Put the CA cert where other instances expect it
+-        x509.write_certificate(options._http_ca_cert, paths.IPA_CA_CRT)
++        with open(paths.IPA_CA_CRT, "w") as http_ca_cert_file:
++            http_ca_cert_file.write(options._http_ca_cert)
+         os.chmod(paths.IPA_CA_CRT, 0o444)
+ 
+         if not options.no_pkinit:
+-            x509.write_certificate(options._http_ca_cert,
+-                                   paths.KDC_CA_BUNDLE_PEM)
++            with open(paths.KDC_CA_BUNDLE_PEM, "w") as http_ca_cert_file:
++                http_ca_cert_file.write(options._http_ca_cert)
+         else:
+             with open(paths.KDC_CA_BUNDLE_PEM, 'w'):
+                 pass
+         os.chmod(paths.KDC_CA_BUNDLE_PEM, 0o444)
+ 
+-        x509.write_certificate(options._http_ca_cert, paths.CA_BUNDLE_PEM)
++        with open(paths.CA_BUNDLE_PEM, "w") as http_ca_cert_file:
++            http_ca_cert_file.write(options._http_ca_cert)
+         os.chmod(paths.CA_BUNDLE_PEM, 0o444)
+ 
+     with redirect_stdout(ansible_log):
+diff --git a/roles/ipaserver/library/ipaserver_setup_ds.py b/roles/ipaserver/library/ipaserver_setup_ds.py
+index fc49d62..3fc9d50 100644
+--- a/roles/ipaserver/library/ipaserver_setup_ds.py
++++ b/roles/ipaserver/library/ipaserver_setup_ds.py
+@@ -126,7 +126,7 @@ def main():
+             dirsrv_config_file=dict(required=False),
+             # ssl certificate
+             dirsrv_cert_files=dict(required=False, type='list', default=[]),
+-            _dirsrv_pkcs12_info=dict(required=False),
++            _dirsrv_pkcs12_info=dict(required=False, type='list'),
+             # certificate system
+             external_cert_files=dict(required=False, type='list', default=[]),
+             subject_base=dict(required=False),
+diff --git a/roles/ipaserver/library/ipaserver_setup_http.py b/roles/ipaserver/library/ipaserver_setup_http.py
+index f5479f5..4d9a54d 100644
+--- a/roles/ipaserver/library/ipaserver_setup_http.py
++++ b/roles/ipaserver/library/ipaserver_setup_http.py
+@@ -199,8 +199,8 @@ def main():
+ 
+             # _update_hosts_file=dict(required=False, type='bool',
+             #                         default=False),
+-            _dirsrv_pkcs12_info=dict(required=False),
+-            _http_pkcs12_info=dict(required=False),
++            _dirsrv_pkcs12_info=dict(required=False, type='list'),
++            _http_pkcs12_info=dict(required=False, type='list'),
+         ),
+     )
+ 
+diff --git a/roles/ipaserver/library/ipaserver_setup_krb.py b/roles/ipaserver/library/ipaserver_setup_krb.py
+index d867146..1101d8d 100644
+--- a/roles/ipaserver/library/ipaserver_setup_krb.py
++++ b/roles/ipaserver/library/ipaserver_setup_krb.py
+@@ -160,7 +160,7 @@ def main():
+             no_reverse=dict(required=False, type='bool', default=False),
+             auto_forwarders=dict(required=False, type='bool', default=False),
+ 
+-            _pkinit_pkcs12_info=dict(required=False),
++            _pkinit_pkcs12_info=dict(required=False, type='list'),
+         ),
+     )
+ 
+diff --git a/roles/ipaserver/library/ipaserver_test.py b/roles/ipaserver/library/ipaserver_test.py
+index 71afabc..fae7343 100644
+--- a/roles/ipaserver/library/ipaserver_test.py
++++ b/roles/ipaserver/library/ipaserver_test.py
+@@ -967,37 +967,25 @@ def main():
+         if options.http_pin is None:
+             ansible_module.fail_json(
+                 msg="Apache Server private key unlock password required")
+-        http_pkcs12_file, http_pin, http_ca_cert = load_pkcs12(
+-            cert_files=options.http_cert_files,
+-            key_password=options.http_pin,
+-            key_nickname=options.http_cert_name,
+-            ca_cert_files=options.ca_cert_files,
+-            host_name=host_name)
+-        http_pkcs12_info = (http_pkcs12_file.name, http_pin)
++        http_pkcs12_info = [options.http_cert_files[0], options.http_pin]
++        with open(options.ca_cert_files[0]) as http_ca_cert_file:
++            http_ca_cert = http_ca_cert_file.read()
+ 
+     if options.dirsrv_cert_files:
+         if options.dirsrv_pin is None:
+             ansible_module.fail_json(
+                 msg="Directory Server private key unlock password required")
+-        dirsrv_pkcs12_file, dirsrv_pin, dirsrv_ca_cert = load_pkcs12(
+-            cert_files=options.dirsrv_cert_files,
+-            key_password=options.dirsrv_pin,
+-            key_nickname=options.dirsrv_cert_name,
+-            ca_cert_files=options.ca_cert_files,
+-            host_name=host_name)
+-        dirsrv_pkcs12_info = (dirsrv_pkcs12_file.name, dirsrv_pin)
++        dirsrv_pkcs12_info = [options.dirsrv_cert_files[0], options.dirsrv_pin]
++        with open(options.ca_cert_files[0]) as dirsrv_ca_cert_file:
++            dirsrv_ca_cert = dirsrv_ca_cert_file.read()
+ 
+     if options.pkinit_cert_files:
+         if options.pkinit_pin is None:
+             ansible_module.fail_json(
+                 msg="Kerberos KDC private key unlock password required")
+-        pkinit_pkcs12_file, pkinit_pin, pkinit_ca_cert = load_pkcs12(
+-            cert_files=options.pkinit_cert_files,
+-            key_password=options.pkinit_pin,
+-            key_nickname=options.pkinit_cert_name,
+-            ca_cert_files=options.ca_cert_files,
+-            realm_name=realm_name)
+-        pkinit_pkcs12_info = (pkinit_pkcs12_file.name, pkinit_pin)
++        pkinit_pkcs12_info = [options.pkinit_cert_files[0], options.pkinit_pin]
++        with open(options.ca_cert_files[0]) as pkinit_ca_cert_file:
++            pkinit_ca_cert = pkinit_ca_cert_file.read()
+ 
+     if options.http_cert_files and options.dirsrv_cert_files and \
+        http_ca_cert != dirsrv_ca_cert:
+diff --git a/roles/ipaserver/tasks/install.yml b/roles/ipaserver/tasks/install.yml
+index 85df9a7..343ce2a 100644
+--- a/roles/ipaserver/tasks/install.yml
++++ b/roles/ipaserver/tasks/install.yml
+@@ -286,6 +286,7 @@
+       reverse_zones: "{{ result_ipaserver_prepare.reverse_zones }}"
+       no_reverse: "{{ ipaserver_no_reverse }}"
+       auto_forwarders: "{{ ipaserver_auto_forwarders }}"
++      _http_ca_cert: "{{ result_ipaserver_test._http_ca_cert }}"
+     register: result_ipaserver_setup_ca
+ 
+   - name: Copy /root/ipa.csr to "{{ inventory_hostname }}-ipa.csr"
+-- 
+2.26.2
+

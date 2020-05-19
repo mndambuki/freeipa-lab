@@ -21,6 +21,8 @@ data "template_file" "freeipa_master_cloudinit" {
     dirsrv_private_key  = base64encode(tls_private_key.freeipa_dirsrv.private_key_pem)
     httpd_certificate   = base64encode(tls_locally_signed_cert.freeipa_httpd.cert_pem)
     httpd_private_key   = base64encode(tls_private_key.freeipa_httpd.private_key_pem)
+    pkinit_certificate  = base64encode(data.local_file.freeipa_pkinit_certificate_pem.content)
+    pkinit_private_key  = base64encode(tls_private_key.freeipa_pkinit.private_key_pem)
   }
 }
 
