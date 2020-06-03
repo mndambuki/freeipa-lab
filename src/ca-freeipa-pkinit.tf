@@ -8,13 +8,24 @@ resource "tls_cert_request" "freeipa_pkinit" {
   key_algorithm   = tls_private_key.freeipa_pkinit.algorithm
 
   subject {
-    common_name         = local.freeipa_master.fqdn
+    common_name         = "KDC"
     organization        = "FreeIPA"
     organizational_unit = "Ansible FreeIPA"
     country             = "ES"
     locality            = "Madrid"
     province            = "Madrid"
   }
+
+  dns_names = [
+    local.freeipa_master.fqdn,
+    local.freeipa_replica.fqdn
+  ]
+
+  ip_addresses = [
+    "127.0.0.1",
+    local.freeipa_master.ip_address,
+    local.freeipa_replica.ip_address
+  ]
 }
 
 resource "local_file" "freeipa_pkinit_csr" {

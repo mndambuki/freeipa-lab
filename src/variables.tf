@@ -61,6 +61,16 @@ variable "freeipa_master" {
   })
 }
 
+# FreeIPA replicas specification
+variable "freeipa_replica" {
+  description = "Configuration for FreeIPA replica virtual machine"
+  type = object({
+    base_img = string,
+    vcpu     = number,
+    memory   = number
+  })
+}
+
 # FreeIPA bastion specification
 variable "freeipa_bastion" {
   description = "Configuration for FreeIPA bastion virtual machine"

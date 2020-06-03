@@ -18,12 +18,14 @@ resource "tls_cert_request" "freeipa_dirsrv" {
 
   dns_names = [
     local.freeipa_master.fqdn,
-    format("freeipa.%s", var.dns.domain)
+    local.freeipa_replica.fqdn,
+    format("ipa.%s", var.dns.domain)
   ]
 
   ip_addresses = [
     "127.0.0.1",
-    local.freeipa_master.ip_address
+    local.freeipa_master.ip_address,
+    local.freeipa_replica.ip_address
   ]
 }
 

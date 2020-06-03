@@ -1,19 +1,19 @@
 locals {
-  freeipa_master = {
-    hostname    = "ipaserver"
-    fqdn        = format("ipaserver.%s", var.dns.domain)
-    ip_address  = lookup(var.freeipa_inventory, "master").ip_address
-    mac_address = lookup(var.freeipa_inventory, "master").mac_address
+  freeipa_replica = {
+    hostname    = "ipareplica"
+    fqdn        = format("ipareplica.%s", var.dns.domain)
+    ip_address  = lookup(var.freeipa_inventory, "replica00").ip_address
+    mac_address = lookup(var.freeipa_inventory, "replica00").mac_address
   }
 }
 
-data "template_file" "freeipa_master_cloudinit" {
+data "template_file" "freeipa_replica_cloudinit" {
 
-  template = file(format("%s/cloudinit/vm-freeipa-master-userdata.yml.tpl", path.module))
+  template = file(format("%s/cloudinit/vm-freeipa-replica-userdata.yml.tpl", path.module))
 
   vars = {
-    hostname   = local.freeipa_master.hostname
-    fqdn       = local.freeipa_master.fqdn
+    hostname   = local.freeipa_replica.hostname
+    fqdn       = local.freeipa_replica.fqdn
     ssh_pubkey = trimspace(tls_private_key.ssh_maintuser.public_key_openssh)
 
     root_ca_certificate = base64encode(tls_self_signed_cert.freeipa_root_ca.cert_pem)
@@ -26,43 +26,43 @@ data "template_file" "freeipa_master_cloudinit" {
   }
 }
 
-resource "libvirt_cloudinit_disk" "freeipa_master" {
-  name      = format("cloudinit-%s.qcow2", local.freeipa_master.hostname)
+resource "libvirt_cloudinit_disk" "freeipa_replica" {
+  name      = format("cloudinit-%s.qcow2", local.freeipa_replica.hostname)
   pool      = libvirt_pool.freeipa.name
-  user_data = data.template_file.freeipa_master_cloudinit.rendered
+  user_data = data.template_file.freeipa_replica_cloudinit.rendered
 }
 
-resource "libvirt_volume" "freeipa_master_image" {
-  name   = format("%s-baseimg.qcow2", local.freeipa_master.hostname)
+resource "libvirt_volume" "freeipa_replica_image" {
+  name   = format("%s-baseimg.qcow2", local.freeipa_replica.hostname)
   pool   = libvirt_pool.freeipa.name
-  source = var.freeipa_master.base_img
+  source = var.freeipa_replica.base_img
   format = "qcow2"
 }
 
-resource "libvirt_volume" "freeipa_master" {
-  name           = format("%s-volume.qcow2", local.freeipa_master.hostname)
+resource "libvirt_volume" "freeipa_replica" {
+  name           = format("%s-volume.qcow2", local.freeipa_replica.hostname)
   pool           = libvirt_pool.freeipa.name
-  base_volume_id = libvirt_volume.freeipa_master_image.id
+  base_volume_id = libvirt_volume.freeipa_replica_image.id
   format         = "qcow2"
 }
 
-resource "libvirt_domain" "freeipa_master" {
-  name   = format("freeipa-%s", local.freeipa_master.hostname)
-  memory = var.freeipa_master.memory
-  vcpu   = var.freeipa_master.vcpu
+resource "libvirt_domain" "freeipa_replica" {
+  name   = format("freeipa-%s", local.freeipa_replica.hostname)
+  memory = var.freeipa_replica.memory
+  vcpu   = var.freeipa_replica.vcpu
 
-  cloudinit = libvirt_cloudinit_disk.freeipa_master.id
+  cloudinit = libvirt_cloudinit_disk.freeipa_replica.id
 
   disk {
-    volume_id = libvirt_volume.freeipa_master.id
+    volume_id = libvirt_volume.freeipa_replica.id
     scsi      = false
   }
 
   network_interface {
     network_name   = libvirt_network.freeipa.name
-    hostname       = local.freeipa_master.fqdn
-    addresses      = [ local.freeipa_master.ip_address ]
-    mac            = local.freeipa_master.mac_address
+    hostname       = local.freeipa_replica.fqdn
+    addresses      = [ local.freeipa_replica.ip_address ]
+    mac            = local.freeipa_replica.mac_address
     wait_for_lease = true
   }
 

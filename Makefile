@@ -1,5 +1,5 @@
 # Terraform parameters
-environment=localhost
+environment=test
 tf_cmd=terraform
 tf_files=src
 tf_backend_conf=configuration/backend

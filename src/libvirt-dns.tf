@@ -6,6 +6,8 @@ data "template_file" "freeipa_dns_records" {
     kerberos_realm      = upper(var.dns.domain)
     freeipa_master_ptr  = join(".", reverse(split(".", local.freeipa_master.ip_address)))
     freeipa_master_fqdn = local.freeipa_master.fqdn
+    freeipa_replica_ptr  = join(".", reverse(split(".", local.freeipa_replica.ip_address)))
+    freeipa_replica_fqdn = local.freeipa_replica.fqdn
   }
 }
 
