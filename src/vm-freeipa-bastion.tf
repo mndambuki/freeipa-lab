@@ -20,6 +20,12 @@ resource "libvirt_cloudinit_disk" "freeipa_bastion" {
   name      = format("cloudinit-%s.qcow2", local.freeipa_bastion.hostname)
   pool      = libvirt_pool.freeipa.name
   user_data = data.template_file.freeipa_bastion_cloudinit.rendered
+
+  lifecycle {
+    ignore_changes = [
+      user_data
+    ]
+  }
 }
 
 resource "libvirt_volume" "freeipa_bastion_image" {

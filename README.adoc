@@ -58,7 +58,7 @@ make
 
 == Deploy FreeIPA cluster
 
-Deploy FreeIPA master using Ansible.
+Deploy FreeIPA server using Ansible.
 
 ```
 ansible-playbook ansible/playbooks/install-server.yml \

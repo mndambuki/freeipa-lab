@@ -3,11 +3,15 @@ data "template_file" "freeipa_dns_records" {
   template = file(format("%s/dns/freeipa-records.xml.tpl", path.module))
 
   vars = {
-    kerberos_realm      = upper(var.dns.domain)
-    freeipa_master_ptr  = join(".", reverse(split(".", local.freeipa_master.ip_address)))
-    freeipa_master_fqdn = local.freeipa_master.fqdn
-    freeipa_replica_ptr  = join(".", reverse(split(".", local.freeipa_replica.ip_address)))
-    freeipa_replica_fqdn = local.freeipa_replica.fqdn
+    kerberos_realm        = upper(var.dns.domain)
+    freeipa_console_cname = format("console.%s", var.dns.domain)
+    freeipa_ldap_cname    = format("ldaps.%s", var.dns.domain)
+    freeipa_master_ptr    = join(".", reverse(split(".", local.freeipa_master.ip)))
+    freeipa_master_fqdn   = local.freeipa_master.fqdn
+    freeipa_master_ip     = local.freeipa_replica.ip
+    freeipa_replica_ptr   = join(".", reverse(split(".", local.freeipa_replica.ip)))
+    freeipa_replica_fqdn  = local.freeipa_replica.fqdn
+    freeipa_replica_ip    = local.freeipa_replica.ip
   }
 }
 

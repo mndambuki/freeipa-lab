@@ -47,7 +47,8 @@ override.tf.json
 
 # Confidential data
 id_rsa*
+private.key
 certificate.pem
-certificate.key
 certificate.srl
 certificate.req
+certificate.csr

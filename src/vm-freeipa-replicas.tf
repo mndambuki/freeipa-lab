@@ -1,9 +1,9 @@
 locals {
   freeipa_replica = {
-    hostname    = "ipareplica"
-    fqdn        = format("ipareplica.%s", var.dns.domain)
-    ip_address  = lookup(var.freeipa_inventory, "replica00").ip_address
-    mac_address = lookup(var.freeipa_inventory, "replica00").mac_address
+    hostname = "ipareplica"
+    fqdn     = format("ipareplica.%s", var.dns.domain)
+    ip       = lookup(var.freeipa_inventory, "replica00").ip_address
+    mac      = lookup(var.freeipa_inventory, "replica00").mac_address
   }
 }
 
@@ -17,12 +17,12 @@ data "template_file" "freeipa_replica_cloudinit" {
     ssh_pubkey = trimspace(tls_private_key.ssh_maintuser.public_key_openssh)
 
     root_ca_certificate = base64encode(tls_self_signed_cert.freeipa_root_ca.cert_pem)
-    dirsrv_certificate  = base64encode(tls_locally_signed_cert.freeipa_dirsrv.cert_pem)
-    dirsrv_private_key  = base64encode(tls_private_key.freeipa_dirsrv.private_key_pem)
-    httpd_certificate   = base64encode(tls_locally_signed_cert.freeipa_httpd.cert_pem)
-    httpd_private_key   = base64encode(tls_private_key.freeipa_httpd.private_key_pem)
-    pkinit_certificate  = base64encode(data.local_file.freeipa_pkinit_certificate_pem.content)
-    pkinit_private_key  = base64encode(tls_private_key.freeipa_pkinit.private_key_pem)
+    dirsrv_certificate  = base64encode(tls_locally_signed_cert.freeipa_replica_dirsrv.cert_pem)
+    dirsrv_private_key  = base64encode(tls_private_key.freeipa_replica_dirsrv.private_key_pem)
+    httpd_certificate   = base64encode(tls_locally_signed_cert.freeipa_replica_httpd.cert_pem)
+    httpd_private_key   = base64encode(tls_private_key.freeipa_replica_httpd.private_key_pem)
+    pkinit_certificate  = base64encode(data.local_file.freeipa_replica_pkinit_certificate_pem.content)
+    pkinit_private_key  = base64encode(tls_private_key.freeipa_replica_pkinit.private_key_pem)
   }
 }
 
@@ -30,6 +30,12 @@ resource "libvirt_cloudinit_disk" "freeipa_replica" {
   name      = format("cloudinit-%s.qcow2", local.freeipa_replica.hostname)
   pool      = libvirt_pool.freeipa.name
   user_data = data.template_file.freeipa_replica_cloudinit.rendered
+
+  lifecycle {
+    ignore_changes = [
+      user_data
+    ]
+  }
 }
 
 resource "libvirt_volume" "freeipa_replica_image" {
@@ -61,8 +67,8 @@ resource "libvirt_domain" "freeipa_replica" {
   network_interface {
     network_name   = libvirt_network.freeipa.name
     hostname       = local.freeipa_replica.fqdn
-    addresses      = [ local.freeipa_replica.ip_address ]
-    mac            = local.freeipa_replica.mac_address
+    addresses      = [ local.freeipa_replica.ip ]
+    mac            = local.freeipa_replica.mac
     wait_for_lease = true
   }
 

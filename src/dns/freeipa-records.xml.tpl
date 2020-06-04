@@ -14,6 +14,16 @@
         <xsl:copy>
             <!-- And everything inside it -->
             <xsl:apply-templates select="@* | *"/>
+            <!-- A records for FreeIPA master -->
+            <host ip="${freeipa_master_ip}">
+                <hostname>${freeipa_console_cname}</hostname>
+                <hostname>${freeipa_ldap_cname}</hostname>
+            </host>
+            <!-- A records for FreeIPA replicas -->
+            <host ip="${freeipa_replica_ip}">
+                <hostname>${freeipa_console_cname}</hostname>
+                <hostname>${freeipa_ldap_cname}</hostname>
+            </host>
             <!-- SRV records for FreeIPA master -->
             <xsl:element name="srv">
                 <xsl:attribute name="service">ldap</xsl:attribute>
