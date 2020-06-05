@@ -1,6 +1,6 @@
 libvirt = {
   pool      = "freeipa"
-  pool_path = "/var/lib/libvirt/storage/freeipa"
+  pool_path = "storage/volumes/freeipa"
 }
 
 network = {
@@ -10,12 +10,12 @@ network = {
 }
 
 dns = {
-  domain = "freeipa.libvirt.int"
+  domain = "test.local"
   server = "10.1.0.1"
 }
 
 freeipa_inventory = {
-  "ipaserver" = {
+  "master" = {
     ip_address  = "10.1.0.10"
     mac_address = "0A:00:00:00:00:00"
   }

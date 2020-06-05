@@ -1,5 +1,5 @@
 # Terraform parameters
-environment=test
+environment=localhost
 tf_cmd=terraform
 tf_files=src
 tf_backend_conf=configuration/backend
@@ -21,23 +21,6 @@ init:
 	@echo "Configuring dnsmasq..."
 	@sudo chmod 777 /etc/NetworkManager/conf.d
 	@sudo chmod 777 /etc/NetworkManager/dnsmasq.d
-
-	@echo "Configuring path $(libvirt_pool_dir) for libvirt pool storage..."
-	@sudo install \
-		--owner="root" \
-		--group="root" \
-		--mode="0750" \
-   		--context="system_u:object_r:virt_image_t:s0" \
-    	--directory $(libvirt_pool_dir)
-
-	@echo "Creating directory $(libvirt_imgs_dir) for libvirt images..."
-	@sudo install \
-		--owner="root" \
-		--group="libvirt" \
-		--mode="0770" \
-   		--context="system_u:object_r:virt_image_t:s0" \
-    	--directory $(libvirt_imgs_dir)
-
 plan:
 	@echo "Planing infrastructure changes..."
 	terraform plan \

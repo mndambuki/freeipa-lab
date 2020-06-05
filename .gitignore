@@ -43,7 +43,9 @@ override.tf.json
 
 # Ansible roles
 
-# Debug files
+# Libvirt storage
+src/storage/images/*
+src/storage/volumes/*
 
 # Confidential data
 id_rsa*
@@ -52,3 +54,6 @@ certificate.pem
 certificate.srl
 certificate.req
 certificate.csr
+
+# Keep files
+!*.gitkeep
