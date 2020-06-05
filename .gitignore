@@ -42,6 +42,7 @@ override.tf.json
 *.out
 
 # Ansible roles
+ansible/ansible-freeipa
 
 # Libvirt storage
 src/storage/images/*
