@@ -13,58 +13,71 @@ Deploy a FreeIPA cluster using Ansible.
 
 Install requirements.
 
-```bash
+[source,bash]
+----
 make requirements
-```
+----
 
 == Setup Libvirt
 
-Use `virsh` command utility to configure libvirt.
+Use `+virsh+` command utility to configure libvirt.
 
-```bash
+[source,bash]
+----
 export LIBVIRT_DEFAULT_URI="qemu:///system"
-```
+----
 
 Check if libvirt is running.
 
-```bash
+[source,bash]
+----
 virsh version --daemon
-```
+----
 
 === QEMU permissions
 
-The provider does not currently support to create volumes with different mode than `root:root` so QEMU agent must run as priviledged. Set user and password in `/etc/libvirt/qemu.conf` file.
+The provider does not currently support to create volumes with different mode than `+root:root+` so QEMU agent must run as priviledged. Set user and password in `+/etc/libvirt/qemu.conf+` file.
 
-```bash
+[source,bash]
+----
+sed -i '/^#user/s/^#//' /etc/libvirt/qemu.conf
+sed -i '/^#group/s/^#//' /etc/libvirt/qemu.conf
 ...
-user = "root"
-group = "root"
-...
-```
+----
 
 Restart libvirt daemon.
 
-```bash
+[source,bash]
+----
 systemctl restart libvirtd
-```
+----
 
 == Deploy infrastructure
 
 Deploy infrastructure using Terraform.
 
-```
+[source,bash]
+----
 make
-```
+----
 
 == Deploy FreeIPA cluster
 
+Clone upstream project.
+
+[source,bash]
+----
+git clone https://github.com/freeipa/ansible-freeipa.git ansible/ansible-freeipa
+----
+
 Deploy FreeIPA server using Ansible.
 
-```
+[source,bash]
+----
 ansible-playbook ansible/playbooks/install-server.yml \
     --inventory ansible/inventory/localhost.yml \
-    --extra-vars "@ansible/variables/localhost-no-ca.yml"
-```
+    --extra-vars "@ansible/variables/localhost.yml"
+----
 
 Deploy FreeIPA replicas.
 
@@ -74,26 +87,30 @@ WIP
 
 === Terraform
 
-Enable debug mode by setting `TF_VAR_DEBUG` to `true` before planning terraform changes.
+Enable debug mode by setting `+TF_VAR_DEBUG+ to `true` before planning terraform changes.
 
-```bash
+[source,bash]
+----
 export TF_VAR_DEBUG="true"
-```
+----
 
 === FreeIPA
 
-Get FreeIPA password for `admin` user.
+Get FreeIPA password for `+admin+` user.
 
-```bash
+[source,bash]
+----
 pass freeipa/localhost/ipaadmin/password
-```
+----
 
 Get Directory server with administration capabilities.
 
-```bash
+[source,bash]
+----
 pass freeipa/localhost/ipadm/password
-```
+----
 
 == References
 
+- https://github.com/freeipa/freeipa
 - https://github.com/freeipa/ansible-freeipa
