@@ -70,18 +70,34 @@ Clone upstream project.
 git clone https://github.com/freeipa/ansible-freeipa.git ansible/ansible-freeipa
 ----
 
-Deploy FreeIPA server using Ansible.
+Deploy FreeIPA server.
 
 [source,bash]
 ----
 ansible-playbook ansible/playbooks/install-server.yml \
     --inventory ansible/inventory/localhost.yml \
-    --extra-vars "@ansible/variables/localhost.yml"
+    --extra-vars "@ansible/variables/localhost.yml" \
+    --extra-vars "@ansible/variables/localhost-server.yml"
 ----
 
 Deploy FreeIPA replicas.
 
-WIP
+[source,bash]
+----
+ansible-playbook ansible/playbooks/install-replica.yml \
+    --inventory ansible/inventory/localhost.yml \
+    --extra-vars "@ansible/variables/localhost.yml" \
+    --extra-vars "@ansible/variables/localhost-replica.yml"
+----
+
+Enroll FreeIPA clients.
+
+[source,bash]
+----
+ansible-playbook ansible/playbooks/install-client.yml \
+    --inventory ansible/inventory/localhost.yml \
+    --extra-vars "@ansible/variables/localhost.yml"
+----
 
 == Troubleshooting
 

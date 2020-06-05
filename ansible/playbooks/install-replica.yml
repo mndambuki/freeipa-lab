@@ -1,0 +1,32 @@
+---
+- name: Playbook to configure IPA servers
+  hosts: ipareplicas
+  become: true
+  tasks:
+    - name: Install ipareplica
+      import_role:
+        name: ipareplica
+  post_tasks:
+    - name: Disable redirects to hard-coded domain
+      replace:
+        path: /etc/httpd/conf.d/ipa-rewrite.conf
+        regexp: "{{ item.regexp }}"
+        replace: "{{ item.replace }}"
+      with_items:
+        - {
+            regexp: '^(RewriteRule \^/\$) (https://.*)(/ipa/ui.*)$',
+            replace: '\1 \3',
+          }
+        - { regexp: '^(RewriteRule \^\/ipa\/\(.*)$', replace: '#\1' }
+        - { regexp: "^(RewriteCond .*)$", replace: '#\1' }
+
+    - name: Deactivate HTTP RefererError
+      replace:
+        path: "/usr/lib/python3.6/site-packages/ipaserver/rpcserver.py"
+        regexp: "{{ item }}"
+        replace: '\1pass  # \2'
+      with_items:
+        - "^([ ]*)(return self.marshal\\(result, RefererError\\(referer)"
+
+    - name: Restart ipa services
+      command: ipactl restart

@@ -1,0 +1,35 @@
+# Replicas configuration
+ipareplica_install_packages: yes
+
+# DNS configuration
+ipareplica_setup_dns: no
+
+# CA configuration
+ipareplica_ca_cert_files:
+  - /root/freeipa/certificates/root-ca.crt
+
+# Directory server configuration
+ipareplica_dirsrv_cert_name: dirsrv-cert
+ipareplica_dirsrv_cert_files:
+  - /root/freeipa/certificates/dirsrv.p12
+ipareplica_dirsrv_pin: ""
+
+# Apache configuration
+ipareplica_no_ui_redirect: no
+ipareplica_http_cert_name: httpd-cert
+ipareplica_http_cert_files:
+  - /root/freeipa/certificates/httpd.p12
+ipareplica_http_pin: ""
+
+# PKINIT configuration
+ipareplica_no_pkinit: no
+ipareplica_pkinit_cert_name: pkinit-cert
+ipareplica_pkinit_cert_files:
+  - /root/freeipa/certificates/pkinit.p12
+ipareplica_pkinit_pin: ""
+
+# Firewalld configuration
+ipareplica_setup_firewalld: yes
+
+# HBAC configuration
+ipareplica_no_hbac_allow: yes

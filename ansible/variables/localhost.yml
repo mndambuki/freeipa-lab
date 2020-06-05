@@ -1,45 +1,15 @@
-# Server configuration
+# Domain configuration
+ipaserver_domain: test.local
+ipaserver_realm: TEST.LOCAL
+
+# FreeIPA configuration
 ipaadmin_principal: admin
 ipaadmin_password:
   "{{ lookup('passwordstore', 'freeipa/localhost/ipaadmin/password create=true length=32 nosymbols=yes') }}"
-ipaserver_install_packages: yes
-
-# DNS configuration
-ipaserver_domain: test.local
-ipaserver_realm: TEST.LOCAL
-ipaserver_setup_dns: no
-
-# CA configuration
-ipaserver_ca_cert_files:
-  - /root/freeipa/certificates/root-ca.crt
 
 # Directory server configuration
 ipadm_password:
   "{{ lookup('passwordstore', 'freeipa/localhost/ipadm/password create=true length=32 nosymbols=yes') }}"
-ipaserver_dirsrv_cert_name: dirsrv-cert
-ipaserver_dirsrv_cert_files:
-  - /root/freeipa/certificates/dirsrv.p12
-ipaserver_dirsrv_pin: ""
-
-# Apache configuration
-ipaserver_no_ui_redirect: no
-ipaserver_http_cert_name: httpd-cert
-ipaserver_http_cert_files:
-  - /root/freeipa/certificates/httpd.p12
-ipaserver_http_pin: ""
-
-# PKINIT configuration
-ipaserver_no_pkinit: no
-ipaserver_pkinit_cert_name: pkinit-cert
-ipaserver_pkinit_cert_files:
-  - /root/freeipa/certificates/pkinit.p12
-ipaserver_pkinit_pin: ""
 
 # NTP configuration
-ipaclient_no_ntp: yes
-
-# Firewalld configuration
-ipaserver_setup_firewalld: yes
-
-# HBAC configuration
-ipaserver_no_hbac_allow: yes
+ipaclient_no_ntp: no
