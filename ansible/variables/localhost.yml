@@ -5,8 +5,8 @@ ipaadmin_password:
 ipaserver_install_packages: yes
 
 # DNS configuration
-ipaserver_domain: freeipa.libvirt.int
-ipaserver_realm: FREEIPA.LIBVIRT.INT
+ipaserver_domain: test.local
+ipaserver_realm: TEST.LOCAL
 ipaserver_setup_dns: no
 
 # CA configuration
@@ -40,3 +40,6 @@ ipaclient_no_ntp: yes
 
 # Firewalld configuration
 ipaserver_setup_firewalld: yes
+
+# HBAC configuration
+ipaserver_no_hbac_allow: yes
