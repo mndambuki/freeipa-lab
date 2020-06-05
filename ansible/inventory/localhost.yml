@@ -5,3 +5,11 @@ ipaserver:
     ansible_ssh_private_key_file: src/ssh/maintuser/id_rsa
   hosts:
     ipaserver.test.local:
+
+ipaclients:
+  vars:
+    ansible_connection: ssh
+    ansible_user: maintuser
+    ansible_ssh_private_key_file: src/ssh/maintuser/id_rsa
+  hosts:
+    bastion.test.local:

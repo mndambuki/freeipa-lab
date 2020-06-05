@@ -1,0 +1,8 @@
+---
+- name: Playbook to unconfigure IPA clients
+  hosts: ipaclients
+  become: true
+  tasks:
+    - name: Install ipaclients
+      import_role:
+        name: ipaclient
