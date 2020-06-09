@@ -7,6 +7,13 @@
       import_role:
         name: ipareplica
   post_tasks:
+    - name: Fix KDC certificate permissions
+      file:
+        path: /var/kerberos/krb5kdc/kdc.crt
+        owner: root
+        group: root
+        mode: '0644'
+
     - name: Disable redirects to hard-coded domain
       replace:
         path: /etc/httpd/conf.d/ipa-rewrite.conf

@@ -44,7 +44,7 @@ destroy: plan
 		$(tf_files)
 	@rm -rf .terraform
 	@rm -rf output/tf.$(environment).plan
-	@rm -rf state/terraform.$(environment).tfstate
+	@rm -rf state/terraform.$(environment).tfstate*
 
 	@echo "Restoring network configuration..."
 	@sudo chmod 755 /etc/NetworkManager/conf.d

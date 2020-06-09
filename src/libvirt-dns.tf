@@ -4,8 +4,6 @@ data "template_file" "freeipa_dns_records" {
 
   vars = {
     kerberos_realm        = upper(var.dns.domain)
-    freeipa_console_cname = format("console.%s", var.dns.domain)
-    freeipa_ldap_cname    = format("ldaps.%s", var.dns.domain)
     freeipa_master_ptr    = join(".", reverse(split(".", local.freeipa_master.ip)))
     freeipa_master_fqdn   = local.freeipa_master.fqdn
     freeipa_master_ip     = local.freeipa_replica.ip
