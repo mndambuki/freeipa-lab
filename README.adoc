@@ -102,7 +102,7 @@ ansible-playbook ansible/playbooks/install-client.yml \
 
 === Terraform
 
-Enable debug mode by setting `+TF_VAR_DEBUG+ to `true` before planning terraform changes.
+Enable debug mode by setting `+TF_VAR_DEBUG+` to `+true+` before planning terraform changes.
 
 [source,bash]
 ----
