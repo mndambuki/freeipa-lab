@@ -75,8 +75,8 @@ Deploy FreeIPA server.
 ----
 ansible-playbook ansible/playbooks/install-server.yml \
     --inventory ansible/inventory/localhost.yml \
-    --extra-vars "@ansible/variables/localhost.yml" \
-    --extra-vars "@ansible/variables/localhost-server.yml"
+    --extra-vars "@ansible/variables/localhost/main.yml" \
+    --extra-vars "@ansible/variables/localhost/server.yml"
 ----
 
 Deploy FreeIPA replicas.
@@ -85,8 +85,8 @@ Deploy FreeIPA replicas.
 ----
 ansible-playbook ansible/playbooks/install-replica.yml \
     --inventory ansible/inventory/localhost.yml \
-    --extra-vars "@ansible/variables/localhost.yml" \
-    --extra-vars "@ansible/variables/localhost-replica.yml"
+    --extra-vars "@ansible/variables/localhost/main.yml" \
+    --extra-vars "@ansible/variables/localhost/replica.yml"
 ----
 
 Enroll FreeIPA clients.
@@ -95,7 +95,7 @@ Enroll FreeIPA clients.
 ----
 ansible-playbook ansible/playbooks/install-client.yml \
     --inventory ansible/inventory/localhost.yml \
-    --extra-vars "@ansible/variables/localhost.yml"
+    --extra-vars "@ansible/variables/localhost/main.yml"
 ----
 
 == Troubleshooting
