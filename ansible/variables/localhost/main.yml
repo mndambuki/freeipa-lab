@@ -13,3 +13,6 @@ ipadm_password:
 
 # NTP configuration
 ipaclient_no_ntp: no
+
+# IPA clients configuration
+ipaclient_mkhomedir: yes

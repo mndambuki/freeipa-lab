@@ -1,0 +1,56 @@
+---
+- name: Playbook to manage HBAC rules
+  hosts: ipaserver:ipareplicas
+  become: true
+  gather_facts: false
+  run_once: true
+  tasks:
+    - name: Create FreeIPA HBAC rules
+      ipahbacrule:
+        name: allow_infrastructure_ssh_to_bastion
+        state: present
+        ipaadmin_principal: "{{ ipaadmin_principal | default(omit) }}"
+        ipaadmin_password: "{{ ipaadmin_password | default(omit) }}"
+        group:
+          - infrastructure
+        hbacsvc:
+          - sshd
+        host:
+          - bastion.test.local
+
+    - name: Create FreeIPA HBAC rules
+      ipahbacrule:
+        name: allow_infrastructure_sudo_to_bastion
+        state: present
+        ipaadmin_principal: "{{ ipaadmin_principal | default(omit) }}"
+        ipaadmin_password: "{{ ipaadmin_password | default(omit) }}"
+        group:
+          - infrastructure
+        hbacsvcgroup:
+          - Sudo
+        host:
+          - bastion.test.local
+
+    - name: Manage FreeIPA sudo rules
+      block:
+        - name: Create sudo commands
+          ipasudocmd:
+            ipaadmin_principal: "{{ ipaadmin_principal | default(omit) }}"
+            ipaadmin_password: "{{ ipaadmin_password | default(omit) }}"
+            name:
+              - /usr/bin/vi
+            state: present
+
+        - name: Create sudo rules
+          ipasudorule:
+            name: allow_infrastructure_sudo_to_bastion
+            state: present
+            ipaadmin_principal: "{{ ipaadmin_principal | default(omit) }}"
+            ipaadmin_password: "{{ ipaadmin_password | default(omit) }}"
+            group:
+              - infrastructure
+            allow_sudocmd:
+              - /usr/bin/vi
+            #cmdcategory: all
+            host:
+              - bastion.test.local
