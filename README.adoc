@@ -121,6 +121,17 @@ ansible-playbook ansible/playbooks/provision-users.yml \
     --extra-vars "ipa_user_id=*"
 ----
 
+Create only one FreeIPA user.
+
+[source,bash]
+----
+ansible-playbook ansible/playbooks/provision-users.yml \
+    --inventory ansible/inventory/localhost.yml \
+    --extra-vars "@ansible/variables/localhost/main.yml" \
+    --extra-vars "ipa_users_folder=variables/localhost/users" \
+    --extra-vars "ipa_user_id=alice"
+----
+
 == Troubleshooting
 
 === Terraform
