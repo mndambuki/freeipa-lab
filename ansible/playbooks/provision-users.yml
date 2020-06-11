@@ -32,7 +32,7 @@
             file: "{{ item }}"
             name: ipa_user_item
           with_fileglob:
-            - "{{ ipa_users_folder_abs }}/*.yml"
+            - "{{ ipa_users_folder_abs }}/{{ ipa_user_id }}.yml"
           register: ipa_users_dict
 
         - name: Get all FreeIPA users
