@@ -98,6 +98,29 @@ ansible-playbook ansible/playbooks/install-client.yml \
     --extra-vars "@ansible/variables/localhost/main.yml"
 ----
 
+== Day-2 operations
+
+Create FreeIPA groups.
+
+[source,bash]
+----
+ansible-playbook ansible/playbooks/provision-groups.yml \
+    --inventory ansible/inventory/localhost.yml \
+    --extra-vars "@ansible/variables/localhost/main.yml" \
+    --extra-vars "@ansible/variables/localhost/groups.yml"
+----
+
+Create FreeIPA users.
+
+[source,bash]
+----
+ansible-playbook ansible/playbooks/provision-users.yml \
+    --inventory ansible/inventory/localhost.yml \
+    --extra-vars "@ansible/variables/localhost/main.yml" \
+    --extra-vars "ipa_users_folder=variables/localhost/users" \
+    --extra-vars "ipa_user_id=*"
+----
+
 == Troubleshooting
 
 === Terraform

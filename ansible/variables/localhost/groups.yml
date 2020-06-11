@@ -1,0 +1,15 @@
+ipa_groups:
+  - name: sysadmins
+    description: Group for system administrators
+    state: present
+
+  - name: dbas
+    description: Group for database administrators
+    state: present
+
+  - name: infrastructure
+    description: Group for infrastructure members
+    state: present
+    groups:
+      - dbas
+      - sysadmins

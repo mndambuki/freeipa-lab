@@ -38,6 +38,18 @@
     preferredlanguage: "{{ ipa_user.preferredlanguage | default('en') }}"
   register: ipa_user_handler
 
+- name: Add FreeIPA user {{ ipa_user.name }} to groups
+  ipagroup:
+    ipaadmin_principal: "{{ ipaadmin_principal | default(omit) }}"
+    ipaadmin_password: "{{ ipaadmin_password | default(omit) }}"
+    name: "{{ ipa_user_group }}"
+    user: "{{ ipa_user.name | mandatory }}"
+    action: member
+  loop:
+    "{{ ipa_user.groups }}"
+  loop_control:
+    loop_var: ipa_user_group
+
 - name: Send the password to the user {{ ipa_user.name }}
   debug:
     msg: "The password for the user {{ ipa_user.name }} is {{ ipa_user_password }}"

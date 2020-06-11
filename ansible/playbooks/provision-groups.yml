@@ -1,0 +1,18 @@
+---
+- name: Playbook to provision IPA groups
+  hosts: ipaserver:ipareplicas
+  become: true
+  gather_facts: false
+  run_once: true
+  tasks:
+    - name: Provision FreeIPA groups
+      ipagroup:
+        ipaadmin_principal: "{{ ipaadmin_principal | default(omit) }}"
+        ipaadmin_password: "{{ ipaadmin_password | default(omit) }}"
+        name: "{{ ipa_group.name }}"
+        description: "{{ ipa_group.description }}"
+        group: "{{ ipa_group.groups | default([]) }}"
+      loop:
+        "{{ ipa_groups }}"
+      loop_control:
+        loop_var: ipa_group
