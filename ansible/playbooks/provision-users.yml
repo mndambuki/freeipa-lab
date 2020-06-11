@@ -1,0 +1,50 @@
+---
+- name: Playbook to provision IPA users
+  hosts: ipaserver:ipareplicas
+  become: true
+  gather_facts: false
+  run_once: true
+  tasks:
+    - name: Retrieve list of user from database folder
+      block:
+        - name: Set absolute path for users folder
+          set_fact:
+            ipa_users_folder_abs: "{{ playbook_dir }}/../{{ ipa_users_folder }}"
+
+        - name: Check if "{{ ipa_users_folder }}" folder exists
+          become: no
+          delegate_to: localhost
+          stat:
+            path: "{{ ipa_users_folder_abs }}"
+          register: ipa_users_folder_handler
+          ignore_errors: yes
+
+        - name: Exit playbook if "{{ ipa_users_folder }}" folder does not exist
+          fail:
+            msg: "The folder {{ ipa_users_folder }} does not exist"
+          when:
+            - not ipa_users_folder_handler.stat.exists
+
+        - name: Get users profile from the database folder (see variables/env/users)
+          become: no
+          delegate_to: localhost
+          include_vars:
+            file: "{{ item }}"
+            name: ipa_user_item
+          with_fileglob:
+            - "{{ ipa_users_folder_abs }}/*.yml"
+          register: ipa_users_dict
+
+        - name: Get all FreeIPA users
+          set_fact:
+            ipa_users: "{{ ipa_users_dict.results | json_query('[].ansible_facts.ipa_user_item') }}"
+
+    - name: Provision FreeIPA users
+      vars:
+        ipaadmin_principal: "{{ ipaadmin_principal }}"
+        ipaadmin_password: "{{ ipaadmin_password }}"
+        ipa_user: "{{ item }}"
+      include_role:
+        name: ipauser
+      loop:
+        "{{ ipa_users }}"

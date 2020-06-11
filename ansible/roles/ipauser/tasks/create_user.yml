@@ -1,0 +1,45 @@
+---
+- name: Check the FreeIPA user {{ ipa_user.name }} exists
+  ipauser:
+    ipaadmin_principal: "{{ ipaadmin_principal | default(omit) }}"
+    ipaadmin_password: "{{ ipaadmin_password | default(omit) }}"
+    name: "{{ ipa_user.name | mandatory }}"
+  ignore_errors: yes
+  register: ipa_user_exists
+
+- name: Generate password for the user {{ ipa_user.name }}
+  set_fact:
+    ipa_user_password: "{{ lookup('password', '/dev/null length=15 chars=ascii_letters') }}"
+    ipa_user_password_expiration: "1990-01-01 00:00:00" # The password is expired on creation
+  when:
+    - ipa_user_exists.failed
+
+- name: Create the FreeIPA user {{ ipa_user.name }}
+  ipauser:
+    ipaadmin_principal: "{{ ipaadmin_principal | default(omit) }}"
+    ipaadmin_password: "{{ ipaadmin_password | default(omit) }}"
+    name: "{{ ipa_user.name | mandatory }}"
+    first: "{{ ipa_user.first | mandatory }}"
+    last: "{{ ipa_user.last | mandatory }}"
+    password: "{{ ipa_user_password | default(omit) }}"
+    passwordexpiration: "{{ ipa_user_password_expiration | default(omit) }}"
+    update_password: on_create
+    userauthtype: password
+    sshpubkey: "{{ ipa_user.sshpubkey | default([]) }}"
+    email: "{{ ipa_user.email | default(omit) }}"
+    phone: "{{ ipa_user.phone | default(omit) }}"
+    employeetype: "{{ ipa_user.employeetype | default(omit) }}"
+    employeenumber: "{{ ipa_user.employeenumber | default(omit) }}"
+    departmentnumber: "{{ ipa_user.departmentnumber | default(omit) }}"
+    orgunit: "{{ ipa_user.orgunit | default(omit) }}"
+    #manager: "{{ ipa_user.manager | default(omit) }}"
+    city: "{{ ipa_user.city | default(omit) }}"
+    postalcode: "{{ ipa_user.postalcode | default(omit) }}"
+    preferredlanguage: "{{ ipa_user.preferredlanguage | default('en') }}"
+  register: ipa_user_handler
+
+- name: Send the password to the user {{ ipa_user.name }}
+  debug:
+    msg: "The password for the user {{ ipa_user.name }} is {{ ipa_user_password }}"
+  when:
+    - ipa_user_exists.failed

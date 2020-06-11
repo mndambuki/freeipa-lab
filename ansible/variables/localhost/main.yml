@@ -13,3 +13,6 @@ ipadm_password:
 
 # NTP configuration
 ipaclient_no_ntp: no
+
+# Users database
+ipa_users_folder: variables/localhost/users

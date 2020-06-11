@@ -1,0 +1,7 @@
+---
+- name: Delete/disable the FreeIPA user {{ ipa_user.name }}
+  ipauser:
+    ipaadmin_principal: "{{ ipaadmin_principal }}"
+    ipaadmin_password: "{{ ipaadmin_password }}"
+    name: "{{ ipa_user.name }}"
+    state: "{{ ipa_user.state | mandatory }}"

@@ -1,0 +1,15 @@
+---
+- name: Check if ipa_user variable is defined
+  fail:
+    msg: "ipa_user variable is not defined, check README.md"
+  when: ipa_user is not defined
+
+- name: Include tasks for creating the user {{ ipa_user.name }}
+  include_tasks: create_user.yml
+  when:
+    - ipa_user.state == "present"
+
+- name: Include tasks for deleting/disabling the user {{ ipa_user.name }}
+  include_tasks: delete_user.yml
+  when:
+    - ipa_user.state != "present"
