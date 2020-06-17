@@ -33,6 +33,7 @@ deploy:
 	terraform apply output/tf.$(environment).plan
 test:
 	@echo "Testing infrastructure..."
+	@virsh -c "qemu:///system" list
 destroy: plan
 	@echo "Elevating privileges..." && sudo -v
 
