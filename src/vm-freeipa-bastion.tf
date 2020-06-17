@@ -1,7 +1,7 @@
 locals {
   freeipa_bastion = {
-    hostname = "bastion"
-    fqdn     = format("bastion.%s", var.dns.domain)
+    hostname = var.freeipa_bastion.id
+    fqdn     = format("%s.%s", var.freeipa_bastion.id, var.dns.domain)
   }
 }
 
@@ -43,7 +43,7 @@ resource "libvirt_volume" "freeipa_bastion" {
 }
 
 resource "libvirt_domain" "freeipa_bastion" {
-  name   = format("freeipa-%s", local.freeipa_bastion.hostname)
+  name   = var.freeipa_bastion.id
   memory = var.freeipa_bastion.memory
   vcpu   = var.freeipa_bastion.vcpu
 

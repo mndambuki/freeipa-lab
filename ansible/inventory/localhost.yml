@@ -12,7 +12,8 @@ ipareplicas:
     ansible_user: maintuser
     ansible_ssh_private_key_file: src/ssh/maintuser/id_rsa
   hosts:
-    ipareplica.test.local:
+    ipareplica00.test.local:
+    ipareplica01.test.local:
 
 ipaclients:
   vars:
@@ -20,4 +21,4 @@ ipaclients:
     ansible_user: maintuser
     ansible_ssh_private_key_file: src/ssh/maintuser/id_rsa
   hosts:
-    bastion.test.local:
+    ipabastion.test.local:

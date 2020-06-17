@@ -15,12 +15,16 @@ dns = {
 }
 
 freeipa_inventory = {
-  "master" = {
+  "ipaserver" = {
     ip_address  = "10.1.0.10"
     mac_address = "0A:00:00:00:00:00"
   }
-  "replica00" = {
+  "ipareplica00" = {
     ip_address  = "10.1.0.11"
     mac_address = "0A:00:00:00:00:01"
+  }
+  "ipareplica01" = {
+    ip_address  = "10.1.0.12"
+    mac_address = "0A:00:00:00:00:02"
   }
 }

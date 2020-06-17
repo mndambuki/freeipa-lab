@@ -2,6 +2,7 @@
 - name: Playbook to configure IPA servers
   hosts: ipareplicas
   become: true
+  serial: 1
   tasks:
     - name: Install ipareplica
       import_role:
@@ -35,5 +36,5 @@
       with_items:
         - "^([ ]*)(return self.marshal\\(result, RefererError\\(referer)"
 
-    - name: Restart ipa services
+    - name: Restart IPA services
       command: ipactl restart

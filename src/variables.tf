@@ -40,21 +40,11 @@ variable "freeipa_inventory" {
   }))
 }
 
-# Load balancer specification
-variable "load_balancer" {
-  description = "Configuration for load balancer virtual machine"
-  type = object({
-    base_img         = string,
-    vcpu             = number,
-    memory           = number,
-    ha_proxy_version = string
-  })
-}
-
 # FreeIPA masters specification
 variable "freeipa_master" {
   description = "Configuration for FreeIPA master virtual machine"
   type = object({
+    id       = string,
     base_img = string,
     vcpu     = number,
     memory   = number
@@ -65,6 +55,7 @@ variable "freeipa_master" {
 variable "freeipa_replica" {
   description = "Configuration for FreeIPA replica virtual machine"
   type = object({
+    id       = string,
     base_img = string,
     vcpu     = number,
     memory   = number
@@ -75,6 +66,7 @@ variable "freeipa_replica" {
 variable "freeipa_bastion" {
   description = "Configuration for FreeIPA bastion virtual machine"
   type = object({
+    id       = string,
     base_img = string,
     vcpu     = number,
     memory   = number

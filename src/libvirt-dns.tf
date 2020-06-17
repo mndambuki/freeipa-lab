@@ -1,15 +1,29 @@
-data "template_file" "freeipa_dns_records" {
-
-  template = file(format("%s/dns/freeipa-records.xml.tpl", path.module))
+data "template_file" "freeipa_dns_txt_records" {
+  template = file(format("%s/dns/records-txt.xml.tpl", path.module))
 
   vars = {
-    kerberos_realm        = upper(var.dns.domain)
-    freeipa_master_ptr    = join(".", reverse(split(".", local.freeipa_master.ip)))
-    freeipa_master_fqdn   = local.freeipa_master.fqdn
-    freeipa_master_ip     = local.freeipa_replica.ip
-    freeipa_replica_ptr   = join(".", reverse(split(".", local.freeipa_replica.ip)))
-    freeipa_replica_fqdn  = local.freeipa_replica.fqdn
-    freeipa_replica_ip    = local.freeipa_replica.ip
+    kerberos_realm = upper(var.dns.domain)
+  }
+}
+
+data "template_file" "freeipa_dns_records" {
+
+  template = file(format("%s/dns/libvirt-network-dns.xml.tpl", path.module))
+
+  vars = {
+    dns_srv_records = indent(12,
+      format("%s\n%s",
+        data.template_file.freeipa_master_dns_srv_records.rendered,
+        join("\n", data.template_file.freeipa_replica_dns_srv_records.*.rendered)
+      )
+    )
+    dns_ptr_records = indent(12,
+      format("%s\n%s",
+        data.template_file.freeipa_master_dns_ptr_records.rendered,
+        join("\n", data.template_file.freeipa_replica_dns_ptr_records.*.rendered)
+      )
+    )
+    dns_txt_records = indent(12, data.template_file.freeipa_dns_txt_records.rendered)
   }
 }
 

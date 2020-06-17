@@ -1,14 +1,20 @@
 resource "tls_private_key" "freeipa_replica_dirsrv" {
+
+  count = local.num_freeipa_replicas
+
   algorithm = "RSA"
   rsa_bits  = 4096
 }
 
 resource "tls_cert_request" "freeipa_replica_dirsrv" {
-  private_key_pem = tls_private_key.freeipa_replica_dirsrv.private_key_pem
-  key_algorithm   = tls_private_key.freeipa_replica_dirsrv.algorithm
+
+  count = local.num_freeipa_replicas
+
+  private_key_pem = tls_private_key.freeipa_replica_dirsrv[count.index].private_key_pem
+  key_algorithm   = tls_private_key.freeipa_replica_dirsrv[count.index].algorithm
 
   subject {
-    common_name         = "Apache HTTP Server"
+    common_name         = "Directory Server"
     organization        = "FreeIPA"
     organizational_unit = "Ansible FreeIPA"
     country             = "ES"
@@ -17,18 +23,21 @@ resource "tls_cert_request" "freeipa_replica_dirsrv" {
   }
 
   dns_names = [
-    local.freeipa_replica.fqdn,
+    local.freeipa_replicas[count.index].fqdn,
     format("ldaps.%s", var.dns.domain)
   ]
 
   ip_addresses = [
     "127.0.0.1",
-    local.freeipa_replica.ip
+    local.freeipa_replicas[count.index].ip
   ]
 }
 
 resource "tls_locally_signed_cert" "freeipa_replica_dirsrv" {
-  cert_request_pem      = tls_cert_request.freeipa_replica_dirsrv.cert_request_pem
+
+  count = local.num_freeipa_replicas
+
+  cert_request_pem      = tls_cert_request.freeipa_replica_dirsrv[count.index].cert_request_pem
   ca_cert_pem           = tls_self_signed_cert.freeipa_root_ca.cert_pem
   ca_private_key_pem    = tls_private_key.freeipa_root_ca.private_key_pem
   ca_key_algorithm      = tls_private_key.freeipa_root_ca.algorithm
@@ -43,22 +52,24 @@ resource "tls_locally_signed_cert" "freeipa_replica_dirsrv" {
   ]
 }
 
-resource "local_file" "freeipa_replica_dirsrv_certificate_pem" {
+resource "local_file" "freeipa_replica_dirsrv_private_key_pem" {
 
-  count = var.DEBUG ? 1 : 0
+  count = var.DEBUG ? local.num_freeipa_replicas : 0
 
-  filename             = format("%s/ca/clients/freeipa-dirsrv/replica/certificate.pem", path.module)
-  content              = tls_locally_signed_cert.freeipa_replica_dirsrv.cert_pem
+  filename             = format("%s/ca/clients/freeipa-dirsrv/%s/private.key",
+    path.module, local.freeipa_replicas[count.index].hostname)
+  content              = tls_private_key.freeipa_replica_dirsrv[count.index].private_key_pem
   file_permission      = "0600"
   directory_permission = "0700"
 }
 
-resource "local_file" "freeipa_replica_dirsrv_private_key_pem" {
+resource "local_file" "freeipa_replica_dirsrv_certificate_pem" {
 
-  count = var.DEBUG ? 1 : 0
+  count = var.DEBUG ? local.num_freeipa_replicas : 0
 
-  filename             = format("%s/ca/clients/freeipa-dirsrv/replica/private.key", path.module)
-  content              = tls_private_key.freeipa_replica_dirsrv.private_key_pem
+  filename             = format("%s/ca/clients/freeipa-dirsrv/%s/certificate.pem",
+    path.module, local.freeipa_replicas[count.index].hostname)
+  content              = tls_locally_signed_cert.freeipa_replica_dirsrv[count.index].cert_pem
   file_permission      = "0600"
   directory_permission = "0700"
 }

@@ -28,5 +28,5 @@
       with_items:
         - "^([ ]*)(return self.marshal\\(result, RefererError\\(referer)"
 
-    - name: Restart ipa services
+    - name: Restart IPA services
       command: ipactl restart

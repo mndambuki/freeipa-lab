@@ -1,11 +1,17 @@
 resource "tls_private_key" "freeipa_replica_pkinit" {
+
+  count = local.num_freeipa_replicas
+
   algorithm = "RSA"
   rsa_bits  = 4096
 }
 
 resource "tls_cert_request" "freeipa_replica_pkinit" {
-  private_key_pem = tls_private_key.freeipa_replica_pkinit.private_key_pem
-  key_algorithm   = tls_private_key.freeipa_replica_pkinit.algorithm
+
+  count = local.num_freeipa_replicas
+
+  private_key_pem = tls_private_key.freeipa_replica_pkinit[count.index].private_key_pem
+  key_algorithm   = tls_private_key.freeipa_replica_pkinit[count.index].algorithm
 
   subject {
     common_name         = "KDC"
@@ -17,45 +23,59 @@ resource "tls_cert_request" "freeipa_replica_pkinit" {
   }
 
   dns_names = [
-    local.freeipa_replica.fqdn,
+    local.freeipa_replicas[count.index].fqdn,
     format("kdc.%s", var.dns.domain)
   ]
 
   ip_addresses = [
     "127.0.0.1",
-    local.freeipa_replica.ip
+    local.freeipa_replicas[count.index].ip
   ]
 }
 
 resource "local_file" "freeipa_replica_pkinit_csr" {
-  filename             = format("%s/ca/clients/freeipa-pkinit/replica/certificate.req", path.module)
-  content              = tls_cert_request.freeipa_replica_pkinit.cert_request_pem
+
+  count = local.num_freeipa_replicas
+
+  filename             = format("%s/ca/clients/freeipa-pkinit/%s/certificate.req",
+    path.module, local.freeipa_replicas[count.index].hostname)
+  content              = tls_cert_request.freeipa_replica_pkinit[count.index].cert_request_pem
   file_permission      = "0600"
   directory_permission = "0700"
 }
 
 resource "null_resource" "freeipa_replica_pkinit_certificate" {
+
+  count = local.num_freeipa_replicas
+
   provisioner "local-exec" {
     environment = {
       REALM = upper(var.dns.domain)
     }
 
     command = format("openssl x509 -req -in %s -CA %s -CAkey %s -extfile %s -extensions kdc_cert -CAcreateserial -out %s -days 365 ",
-      local_file.freeipa_replica_pkinit_csr.filename,
+      local_file.freeipa_replica_pkinit_csr[count.index].filename,
       local_file.freeipa_root_ca_certificate_pem.filename,
       local_file.freeipa_root_ca_private_key_pem.filename,
       format("%s/ca/clients/freeipa-pkinit/extensions.conf", path.module),
-      format("%s/ca/clients/freeipa-pkinit/replica/certificate.pem", path.module))
+      format("%s/ca/clients/freeipa-pkinit/%s/certificate.pem",
+        path.module, local.freeipa_replicas[count.index].hostname)
+    )
   }
 
   provisioner "local-exec" {
     when    = destroy
-    command = format("rm -f %s/ca/clients/freeipa-pkinit/replica/certificate.pem", path.module)
+    command = format("rm -f %s/ca/clients/freeipa-pkinit/%s/certificate.pem",
+      path.module, local.freeipa_replicas[count.index].hostname)
   }
 }
 
 data "local_file" "freeipa_replica_pkinit_certificate_pem" {
-  filename = format("%s/ca/clients/freeipa-pkinit/replica/certificate.pem", path.module)
+
+  count = local.num_freeipa_replicas
+
+  filename = format("%s/ca/clients/freeipa-pkinit/%s/certificate.pem",
+    path.module, local.freeipa_replicas[count.index].hostname)
 
   # TODO: Will work when https://github.com/hashicorp/terraform/pull/24904 is closed
   depends_on = [
@@ -65,10 +85,11 @@ data "local_file" "freeipa_replica_pkinit_certificate_pem" {
 
 resource "local_file" "freeipa_replica_pkinit_private_key_pem" {
 
-  count = var.DEBUG ? 1 : 0
+  count = var.DEBUG ? local.num_freeipa_replicas : 0
 
-  filename             = format("%s/ca/clients/freeipa-pkinit/replica/private.key", path.module)
-  content              = tls_private_key.freeipa_replica_pkinit.private_key_pem
+  filename             = format("%s/ca/clients/freeipa-pkinit/%s/private.key",
+    path.module, local.freeipa_replicas[count.index].hostname)
+  content              = tls_private_key.freeipa_replica_pkinit[count.index].private_key_pem
   file_permission      = "0600"
   directory_permission = "0700"
 }

@@ -1,9 +1,9 @@
 locals {
   freeipa_master = {
-    hostname = "ipaserver"
-    fqdn     = format("ipaserver.%s", var.dns.domain)
-    ip       = lookup(var.freeipa_inventory, "master").ip_address
-    mac      = lookup(var.freeipa_inventory, "master").mac_address
+    hostname = var.freeipa_master.id
+    fqdn     = format("%s.%s", var.freeipa_master.id, var.dns.domain)
+    ip       = lookup(var.freeipa_inventory, var.freeipa_master.id).ip_address
+    mac      = lookup(var.freeipa_inventory, var.freeipa_master.id).mac_address
   }
 }
 
@@ -53,7 +53,7 @@ resource "libvirt_volume" "freeipa_master" {
 }
 
 resource "libvirt_domain" "freeipa_master" {
-  name   = format("freeipa-%s", local.freeipa_master.hostname)
+  name   = local.freeipa_master.hostname
   memory = var.freeipa_master.memory
   vcpu   = var.freeipa_master.vcpu
 
