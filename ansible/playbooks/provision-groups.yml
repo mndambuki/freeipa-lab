@@ -5,7 +5,7 @@
   gather_facts: false
   run_once: true
   tasks:
-    - name: Provision FreeIPA groups
+    - name: Create FreeIPA groups
       ipagroup:
         ipaadmin_principal: "{{ ipaadmin_principal | default(omit) }}"
         ipaadmin_password: "{{ ipaadmin_password | mandatory }}"
@@ -16,3 +16,20 @@
         "{{ ipa_groups }}"
       loop_control:
         loop_var: ipa_group
+      when: >
+        ipa_group.state is not defined or
+        ipa_group.state == "present"
+
+    - name: Delete FreeIPA groups
+      ipagroup:
+        ipaadmin_principal: "{{ ipaadmin_principal | default(omit) }}"
+        ipaadmin_password: "{{ ipaadmin_password | mandatory }}"
+        name: "{{ ipa_group.name | mandatory }}"
+        state: "{{ ipa_group.state | mandatory }}"
+      loop:
+        "{{ ipa_groups }}"
+      loop_control:
+        loop_var: ipa_group
+      when:
+        - ipa_group.state is defined
+        - ipa_group.state != "present"
