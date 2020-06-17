@@ -1,0 +1,42 @@
+---
+- name: Playbook to manage IPA password policies
+  hosts: ipaserver:ipareplicas
+  become: true
+  gather_facts: false
+  run_once: true
+  tasks:
+    - name: Create FreeIPA password policy
+      ipapwpolicy:
+        ipaadmin_principal: "{{ ipaadmin_principal | default(omit) }}"
+        ipaadmin_password: "{{ ipaadmin_password | mandatory }}"
+        name: "{{ ipa_pwpolicy.name | default(omit) }}"
+        maxlife: "{{ ipa_pwpolicy.maxlife | default(omit) }}"
+        minlife: "{{ ipa_pwpolicy.minlife | default(omit) }}"
+        history: "{{ ipa_pwpolicy.history | default(omit) }}"
+        minclasses: "{{ ipa_pwpolicy.minclasses | default(omit) }}"
+        minlength: "{{ ipa_pwpolicy.minlength | default(omit) }}"
+        maxfail: "{{ ipa_pwpolicy.maxfail | default(omit) }}"
+        failinterval: "{{ ipa_pwpolicy.failinterval | default(omit) }}"
+        lockouttime: "{{ ipa_pwpolicy.lockouttime | default(omit) }}"
+        priority: "{{ ipa_pwpolicy.priority | default(omit) }}"
+      loop:
+        "{{ ipa_password_policies }}"
+      loop_control:
+        loop_var: ipa_pwpolicy
+      when: >
+        ipa_pwpolicy.state is not defined or
+        ipa_pwpolicy.state == "present"
+
+    - name: Delete FreeIPA password policy
+      ipapwpolicy:
+        ipaadmin_principal: "{{ ipaadmin_principal | default(omit) }}"
+        ipaadmin_password: "{{ ipaadmin_password | mandatory }}"
+        name: "{{ ipa_pwpolicy.name | default(omit) }}"
+        state: "{{ ipa_pwpolicy.state | mandatory }}"
+      loop:
+        "{{ ipa_password_policies }}"
+      loop_control:
+        loop_var: ipa_pwpolicy
+      when:
+        - ipa_pwpolicy.state is defined
+        - ipa_pwpolicy.state != "present"

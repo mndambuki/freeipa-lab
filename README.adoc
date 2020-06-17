@@ -120,6 +120,16 @@ ansible-playbook ansible/playbooks/provision-groups.yml \
     --extra-vars "@ansible/variables/localhost/groups.yml"
 ----
 
+Set password policy for FreeIPA groups.
+
+[source,bash]
+----
+ansible-playbook ansible/playbooks/configure-pwpolicy.yml \
+    --inventory ansible/inventory/localhost.yml \
+    --extra-vars "@ansible/variables/localhost/main.yml" \
+    --extra-vars "@ansible/variables/localhost/password-policies.yml"
+----
+
 Create FreeIPA users.
 
 [source,bash]
