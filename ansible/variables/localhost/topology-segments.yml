@@ -3,10 +3,12 @@ ipa_topology_segments:
     left: ipareplica00.test.local
     right: ipaserver.test.local
     state: present
+
   - suffix: domain
     left: ipareplica01.test.local
     right: ipaserver.test.local
     state: present
+
   - suffix: domain
     left: ipareplica00.test.local
     right: ipareplica01.test.local
