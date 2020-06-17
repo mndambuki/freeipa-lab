@@ -10,7 +10,7 @@
         name: allow_infrastructure_ssh_to_bastion
         state: present
         ipaadmin_principal: "{{ ipaadmin_principal | default(omit) }}"
-        ipaadmin_password: "{{ ipaadmin_password | default(omit) }}"
+        ipaadmin_password: "{{ ipaadmin_password | mandatory }}"
         group:
           - infrastructure
         hbacsvc:
@@ -23,7 +23,7 @@
         name: allow_infrastructure_sudo_to_bastion
         state: present
         ipaadmin_principal: "{{ ipaadmin_principal | default(omit) }}"
-        ipaadmin_password: "{{ ipaadmin_password | default(omit) }}"
+        ipaadmin_password: "{{ ipaadmin_password | mandatory }}"
         group:
           - infrastructure
         hbacsvcgroup:
@@ -36,7 +36,7 @@
         - name: Create sudo commands
           ipasudocmd:
             ipaadmin_principal: "{{ ipaadmin_principal | default(omit) }}"
-            ipaadmin_password: "{{ ipaadmin_password | default(omit) }}"
+            ipaadmin_password: "{{ ipaadmin_password | mandatory }}"
             name:
               - /usr/bin/vi
             state: present
@@ -46,7 +46,7 @@
             name: allow_infrastructure_sudo_to_bastion
             state: present
             ipaadmin_principal: "{{ ipaadmin_principal | default(omit) }}"
-            ipaadmin_password: "{{ ipaadmin_password | default(omit) }}"
+            ipaadmin_password: "{{ ipaadmin_password | mandatory }}"
             group:
               - infrastructure
             allow_sudocmd:

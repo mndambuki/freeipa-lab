@@ -8,7 +8,7 @@
     - name: Manage FreeIPA topology segmnets
       ipatopologysegment:
         ipaadmin_principal: "{{ ipaadmin_principal | default(omit) }}"
-        ipaadmin_password: "{{ ipaadmin_password | default(omit) }}"
+        ipaadmin_password: "{{ ipaadmin_password | mandatory }}"
         name: "{{ ipa_topology_segment.name | default(omit) }}"
         suffix: "{{ ipa_topology_segment.suffix }}"
         left: "{{ ipa_topology_segment.left }}"

@@ -8,9 +8,9 @@
     - name: Provision FreeIPA groups
       ipagroup:
         ipaadmin_principal: "{{ ipaadmin_principal | default(omit) }}"
-        ipaadmin_password: "{{ ipaadmin_password | default(omit) }}"
-        name: "{{ ipa_group.name }}"
-        description: "{{ ipa_group.description }}"
+        ipaadmin_password: "{{ ipaadmin_password | mandatory }}"
+        name: "{{ ipa_group.name | mandatory }}"
+        description: "{{ ipa_group.description | default(omit) }}"
         group: "{{ ipa_group.groups | default([]) }}"
       loop:
         "{{ ipa_groups }}"

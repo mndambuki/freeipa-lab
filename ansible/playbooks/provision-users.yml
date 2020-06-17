@@ -41,8 +41,8 @@
 
     - name: Provision FreeIPA users
       vars:
-        ipaadmin_principal: "{{ ipaadmin_principal }}"
-        ipaadmin_password: "{{ ipaadmin_password }}"
+        ipaadmin_principal: "{{ ipaadmin_principal | default(omit) }}"
+        ipaadmin_password: "{{ ipaadmin_password | mandatory }}"
         ipa_user: "{{ item }}"
       include_role:
         name: ipauser
