@@ -1,0 +1,20 @@
+---
+- name: Playbook to manage IPA topology segments
+  hosts: ipaserver:ipareplicas
+  become: true
+  gather_facts: false
+  run_once: true
+  tasks:
+    - name: Manage FreeIPA topology segmnets
+      ipatopologysegment:
+        ipaadmin_principal: "{{ ipaadmin_principal | default(omit) }}"
+        ipaadmin_password: "{{ ipaadmin_password | default(omit) }}"
+        name: "{{ ipa_topology_segment.name | default(omit) }}"
+        suffix: "{{ ipa_topology_segment.suffix }}"
+        left: "{{ ipa_topology_segment.left }}"
+        right: "{{ ipa_topology_segment.right }}"
+        state: "{{ ipa_topology_segment.state }}"
+      loop:
+        "{{ ipa_topology_segments }}"
+      loop_control:
+        loop_var: ipa_topology_segment

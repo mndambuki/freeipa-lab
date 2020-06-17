@@ -89,6 +89,16 @@ ansible-playbook ansible/playbooks/install-replica.yml \
     --extra-vars "@ansible/variables/localhost/replica.yml"
 ----
 
+Modify FreeIPA topology.
+
+[source,bash]
+----
+ansible-playbook ansible/playbooks/topology.yml \
+    --inventory ansible/inventory/localhost.yml \
+    --extra-vars "@ansible/variables/localhost/main.yml" \
+    --extra-vars "@ansible/variables/localhost/topology-segments.yml"
+----
+
 Enroll FreeIPA clients.
 
 [source,bash]
@@ -98,7 +108,7 @@ ansible-playbook ansible/playbooks/install-client.yml \
     --extra-vars "@ansible/variables/localhost/main.yml"
 ----
 
-== Day-2 operations
+== Users management
 
 Create FreeIPA groups.
 
@@ -131,6 +141,8 @@ ansible-playbook ansible/playbooks/provision-users.yml \
     --extra-vars "ipa_users_folder=variables/localhost/users" \
     --extra-vars "ipa_user_id=alice"
 ----
+
+== Hosts management
 
 Manage HBAC rules.
 
