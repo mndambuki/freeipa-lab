@@ -5,15 +5,15 @@
   gather_facts: false
   run_once: true
   tasks:
-    - name: Manage FreeIPA topology segmnets
+    - name: Configure FreeIPA topology segment
       ipatopologysegment:
         ipaadmin_principal: "{{ ipaadmin_principal | default(omit) }}"
         ipaadmin_password: "{{ ipaadmin_password | mandatory }}"
         name: "{{ ipa_topology_segment.name | default(omit) }}"
-        suffix: "{{ ipa_topology_segment.suffix }}"
-        left: "{{ ipa_topology_segment.left }}"
-        right: "{{ ipa_topology_segment.right }}"
-        state: "{{ ipa_topology_segment.state }}"
+        suffix: "{{ ipa_topology_segment.suffix | mandatory }}"
+        left: "{{ ipa_topology_segment.left | mandatory }}"
+        right: "{{ ipa_topology_segment.right | mandatory }}"
+        state: "{{ ipa_topology_segment.state | default('present') }}"
       loop:
         "{{ ipa_topology_segments }}"
       loop_control:
