@@ -56,5 +56,8 @@ certificate.srl
 certificate.req
 certificate.csr
 
+# Debug files
+auth.log
+
 # Keep files
 !*.gitkeep

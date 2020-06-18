@@ -1,5 +1,5 @@
 ---
-- name: Check the FreeIPA user {{ ipa_user.name }} exists
+- name: Check if the FreeIPA user {{ ipa_user.name }} exists
   ipauser:
     ipaadmin_principal: "{{ ipaadmin_principal | default(omit) }}"
     ipaadmin_password: "{{ ipaadmin_password | default(omit) }}"
@@ -7,9 +7,9 @@
   ignore_errors: yes
   register: ipa_user_exists
 
-- name: Generate password for the user {{ ipa_user.name }}
+- name: Generate a password for the user {{ ipa_user.name }}
   set_fact:
-    ipa_user_password: "{{ lookup('password', '/dev/null length=15 chars=ascii_letters') }}"
+    ipa_user_password: "{{ lookup('password', '/dev/null length=16 chars=ascii_letters') }}"
     ipa_user_password_expiration: "1990-01-01 00:00:00" # The password is expired on creation
   when:
     - ipa_user_exists.failed
@@ -25,6 +25,7 @@
     passwordexpiration: "{{ ipa_user_password_expiration | default(omit) }}"
     update_password: on_create
     userauthtype: password
+    shell: "{{ ipa_user.shell | default(omit) }}"
     sshpubkey: "{{ ipa_user.sshpubkey | default([]) }}"
     email: "{{ ipa_user.email | default(omit) }}"
     phone: "{{ ipa_user.phone | default(omit) }}"
@@ -50,8 +51,31 @@
   loop_control:
     loop_var: ipa_user_group
 
-- name: Send the password to the user {{ ipa_user.name }}
-  debug:
-    msg: "The password for the user {{ ipa_user.name }} is {{ ipa_user_password }}"
+- name: Force password unexpiration for the user {{ ipa_user.name }}
+  block:
+    - name: Generate a new password for the user {{ ipa_user.name }}
+      set_fact:
+        ipa_user_password: "{{ lookup('password', '/dev/null length=32 chars=ascii_letters') }}"
+
+    - name: Set the new password for the user {{ ipa_user.name }}
+      ipauser:
+        ipaadmin_principal: "{{ ipaadmin_principal | default(omit) }}"
+        ipaadmin_password: "{{ ipaadmin_password | default(omit) }}"
+        name: "{{ ipa_user.name | mandatory }}"
+        password: "{{ ipa_user_password | default(omit) }}"
+  when:
+    - ipa_user_exists.failed
+    - ipa_user.expirepassword is defined
+    - not ipa_user.expirepassword
+
+- name: Retrieve the password to the user {{ ipa_user.name }}
+  block:
+    - name: Save the password for the new user into the auth.log file
+      become: no
+      delegate_to: localhost
+      lineinfile:
+        path: auth.log
+        create: yes
+        line: "{{ ipa_user.name }}@{{ ipa_user_password }}"
   when:
     - ipa_user_exists.failed

@@ -15,7 +15,10 @@ A description of the settable variables for this role should go here, including 
 | ipa_user.name              | string | yes         | Username for the new user
 | ipa_user.first             | string | yes         | Principal name for the new user
 | ipa_user.last              | string | yes         | Surname for the new user
+| ipa_user.shell             | string | yes         | Unix login shell
 | ipa_user.sshpubkey         | list   | no          | Public keys for SSH authentication
+| ipa_user.groups            | list   | no          | Groups the user belong to
+| ipa_user.expirepassword    | bool   | no          | Expire password on user creation
 | ipa_user.email             | string | no          | Email for the new user
 | ipa_user.phone             | string | no          | Phone number for the new user
 | ipa_user.employeetype      | string | no          | Employee type for the new user

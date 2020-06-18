@@ -1,0 +1,9 @@
+name: users-provisioner
+first: Service
+last: Account
+shell: /bin/false
+groups:
+  - sysaccounts
+expirepassword: false
+email: noreply@example.io
+state: present
