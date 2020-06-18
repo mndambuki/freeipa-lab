@@ -69,7 +69,9 @@ Clone upstream project.
 git clone https://github.com/freeipa/ansible-freeipa.git ansible/ansible-freeipa
 ----
 
-Deploy FreeIPA server.
+=== First server
+
+Deploy FreeIPA first server.
 
 [source,bash]
 ----
@@ -78,6 +80,8 @@ ansible-playbook ansible/playbooks/install-server.yml \
     --extra-vars "@ansible/variables/localhost/main.yml" \
     --extra-vars "@ansible/variables/localhost/server.yml"
 ----
+
+=== Replicas
 
 Deploy FreeIPA replicas.
 
@@ -89,6 +93,8 @@ ansible-playbook ansible/playbooks/install-replica.yml \
     --extra-vars "@ansible/variables/localhost/replica.yml"
 ----
 
+=== Topology
+
 Modify FreeIPA topology.
 
 [source,bash]
@@ -99,16 +105,15 @@ ansible-playbook ansible/playbooks/topology.yml \
     --extra-vars "@ansible/variables/localhost/topology-segments.yml"
 ----
 
-Enroll FreeIPA clients.
+=== Default configuration
 
-[source,bash]
-----
-ansible-playbook ansible/playbooks/install-client.yml \
-    --inventory ansible/inventory/localhost.yml \
-    --extra-vars "@ansible/variables/localhost/main.yml"
-----
+WIP
 
 == Users management
+
+Provision (create, modify and delete) groups and users.
+
+=== Groups
 
 Create FreeIPA groups.
 
@@ -120,6 +125,8 @@ ansible-playbook ansible/playbooks/provision-groups.yml \
     --extra-vars "@ansible/variables/localhost/groups.yml"
 ----
 
+=== Password policy
+
 Set password policy for FreeIPA groups.
 
 [source,bash]
@@ -129,6 +136,8 @@ ansible-playbook ansible/playbooks/configure-pwpolicy.yml \
     --extra-vars "@ansible/variables/localhost/main.yml" \
     --extra-vars "@ansible/variables/localhost/password-policies.yml"
 ----
+
+=== Users
 
 Create FreeIPA users.
 
@@ -152,7 +161,35 @@ ansible-playbook ansible/playbooks/provision-users.yml \
     --extra-vars "ipa_user_id=alice"
 ----
 
+=== MFA
+
+Enable MFA for a user.
+
+[source,bash]
+----
+ipa otptoken-add --owner=${user_id}
+----
+
+=== RBAC
+
+TODO:
+
 == Hosts management
+
+Provision (create, modify and delete) hosts as FreeIPA clients.
+
+=== Enrollment
+
+Enroll FreeIPA clients using Ansible.
+
+[source,bash]
+----
+ansible-playbook ansible/playbooks/install-client.yml \
+    --inventory ansible/inventory/localhost.yml \
+    --extra-vars "@ansible/variables/localhost/main.yml"
+----
+
+=== HBAC
 
 Manage HBAC rules.
 
@@ -163,12 +200,26 @@ ansible-playbook ansible/playbooks/hbac.yml \
     --extra-vars "@ansible/variables/localhost/main.yml"
 ----
 
+=== Sudo rules
+
+Manage sudo rules.
+
+TODO:
+
 *IMPORTANT*: If sudo rules are weak, it is possible to escalate privileges:
 
 [source,bash]
 ----
 sudo vi -c '!bash'
 ----
+
+== LDAP clients integration
+
+TODO:
+
+== Disaster recovery
+
+TODO:
 
 == Troubleshooting
 
