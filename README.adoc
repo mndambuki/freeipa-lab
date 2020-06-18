@@ -99,7 +99,7 @@ Modify FreeIPA topology.
 
 [source,bash]
 ----
-ansible-playbook ansible/playbooks/topology.yml \
+ansible-playbook ansible/playbooks/configure-topology.yml \
     --inventory ansible/inventory/localhost.yml \
     --extra-vars "@ansible/variables/localhost/main.yml" \
     --extra-vars "@ansible/variables/localhost/topology-segments.yml"
@@ -111,7 +111,7 @@ Modify default FreeIPA configuration.
 
 [source,bash]
 ----
-ansible-playbook ansible/playbooks/modify-configuration.yml \
+ansible-playbook ansible/playbooks/configure-default-settings.yml \
     --inventory ansible/inventory/localhost.yml \
     --extra-vars "@ansible/variables/localhost/main.yml" \
     --extra-vars "@ansible/variables/localhost/default-configuration.yml"
@@ -214,7 +214,7 @@ Manage HBAC rules.
 
 [source,bash]
 ----
-ansible-playbook ansible/playbooks/hbac.yml \
+ansible-playbook ansible/playbooks/configure-hbac.yml \
     --inventory ansible/inventory/localhost.yml \
     --extra-vars "@ansible/variables/localhost/main.yml"
 ----
