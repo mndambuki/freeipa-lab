@@ -5,7 +5,7 @@
   gather_facts: false
   run_once: true
   tasks:
-    - name: Show rendered SELinux map order
+    - name: "[INFO] Show rendered SELinux map order"
       debug:
         msg: "{{ ipa_default_configuration.selinuxusermaporder | join('$') | default(omit) }}"
         verbosity: 1

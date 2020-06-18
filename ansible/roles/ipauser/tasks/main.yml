@@ -4,6 +4,14 @@
     msg: "ipa_user variable is not defined, check README.md"
   when: ipa_user is not defined
 
+- name: Check if the user {{ ipa_user.name }} exists
+  ipauser:
+    ipaadmin_principal: "{{ ipaadmin_principal | default(omit) }}"
+    ipaadmin_password: "{{ ipaadmin_password | mandatory }}"
+    name: "{{ ipa_user.name | mandatory }}"
+  ignore_errors: yes
+  register: ipa_user_exists
+
 - name: Include tasks for creating the user {{ ipa_user.name }}
   include_tasks: create_user.yml
   when:
@@ -12,4 +20,5 @@
 - name: Include tasks for deleting/disabling the user {{ ipa_user.name }}
   include_tasks: delete_user.yml
   when:
+    - not ipa_user_exists.failed
     - ipa_user.state != "present"

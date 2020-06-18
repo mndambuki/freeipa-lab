@@ -1,11 +1,13 @@
 ---
-- name: Check if the FreeIPA user {{ ipa_user.name }} exists
-  ipauser:
-    ipaadmin_principal: "{{ ipaadmin_principal | default(omit) }}"
-    ipaadmin_password: "{{ ipaadmin_password | default(omit) }}"
-    name: "{{ ipa_user.name | mandatory }}"
-  ignore_errors: yes
-  register: ipa_user_exists
+- name: Get information for the user {{ ipa_user.name }}
+  ipa_user:
+    name: "{{ ipa_user.name }}"
+    ipa_host: localhost
+    ipa_user: "{{ ipaadmin_principal | default(omit) }}"
+    ipa_pass: "{{ ipaadmin_password | mandatory }}"
+    validate_certs: no
+    state: present
+  register: ipa_user_info
 
 - name: Generate a password for the user {{ ipa_user.name }}
   set_fact:
@@ -17,7 +19,7 @@
 - name: Create the FreeIPA user {{ ipa_user.name }}
   ipauser:
     ipaadmin_principal: "{{ ipaadmin_principal | default(omit) }}"
-    ipaadmin_password: "{{ ipaadmin_password | default(omit) }}"
+    ipaadmin_password: "{{ ipaadmin_password | mandatory }}"
     name: "{{ ipa_user.name | mandatory }}"
     first: "{{ ipa_user.first | mandatory }}"
     last: "{{ ipa_user.last | mandatory }}"
@@ -39,17 +41,71 @@
     preferredlanguage: "{{ ipa_user.preferredlanguage | default('en') }}"
   register: ipa_user_handler
 
-- name: Add FreeIPA user {{ ipa_user.name }} to groups
-  ipagroup:
-    ipaadmin_principal: "{{ ipaadmin_principal | default(omit) }}"
-    ipaadmin_password: "{{ ipaadmin_password | default(omit) }}"
-    name: "{{ ipa_user_group }}"
-    user: "{{ ipa_user.name | mandatory }}"
-    action: member
-  loop:
-    "{{ ipa_user.groups }}"
-  loop_control:
-    loop_var: ipa_user_group
+- name: Manage groups for the user {{ ipa_user.name }}
+  block:
+    - name:
+      set_fact:
+        ipa_user_groups_now: "{{ ipa_user_info.user.memberof_group | default([]) }}"
+        ipa_user_groups_desired: "{{ (ipa_user.groups | default([])) + [ 'ipausers' ] }}"
+
+    - name: "[INFO] Print current groups for the user {{ ipa_user.name }}"
+      debug:
+        msg:
+          - The user belongs to groups {{ ipa_user_groups_now | join(',') }}
+          - The user will belong to groups {{ ipa_user_groups_desired | join(',') }}
+        verbosity: 1
+
+    - name: Get groups drift for the user {{ ipa_user.name }}
+      set_fact:
+        ipa_user_groups_to_add: "{{ ipa_user_groups_desired | difference(ipa_user_groups_now) }}"
+        ipa_user_groups_to_del: "{{ ipa_user_groups_now | difference(ipa_user_groups_desired) }}"
+
+    - name: Add user {{ ipa_user.name }} to groups
+      include_tasks: add_user_to_group.yml
+      loop:
+        "{{ ipa_user_groups_to_add | default([]) }}"
+      loop_control:
+        loop_var: ipa_user_group
+
+    - name: Delete user {{ ipa_user.name }} from groups
+      include_tasks: delete_user_from_group.yml
+      loop:
+        "{{ ipa_user_groups_to_del | default([]) }}"
+      loop_control:
+        loop_var: ipa_user_group
+
+- name: Manage roles for the user {{ ipa_user.name }}
+  block:
+    - name:
+      set_fact:
+        ipa_user_roles_now: "{{ ipa_user_info.user.memberof_role | default([]) }}"
+        ipa_user_roles_desired: "{{ ipa_user.roles | default([]) }}"
+
+    - name: "[INFO] Print current roles for the user {{ ipa_user.name }}"
+      debug:
+        msg:
+          - The user owns the roles {{ ipa_user_roles_now | join(',') }}
+          - The user will own the roles {{ ipa_user_roles_desired | join(',') }}
+        verbosity: 1
+
+    - name: Get roles drift for the user {{ ipa_user.name }}
+      set_fact:
+        ipa_user_roles_to_add: "{{ ipa_user_roles_desired | difference(ipa_user_roles_now) }}"
+        ipa_user_roles_to_del: "{{ ipa_user_roles_now | difference(ipa_user_roles_desired) }}"
+
+    - name: Add roles to the user {{ ipa_user.name }}
+      include_tasks: add_role_to_user.yml
+      loop:
+        "{{ ipa_user_roles_to_add | default([]) }}"
+      loop_control:
+        loop_var: ipa_user_role
+
+    - name: Delete roles from the user {{ ipa_user.name }}
+      include_tasks: delete_role_from_user.yml
+      loop:
+        "{{ ipa_user_roles_to_del | default([]) }}"
+      loop_control:
+        loop_var: ipa_user_role
 
 - name: Force password unexpiration for the user {{ ipa_user.name }}
   block:
@@ -60,7 +116,7 @@
     - name: Set the new password for the user {{ ipa_user.name }}
       ipauser:
         ipaadmin_principal: "{{ ipaadmin_principal | default(omit) }}"
-        ipaadmin_password: "{{ ipaadmin_password | default(omit) }}"
+        ipaadmin_password: "{{ ipaadmin_password | mandatory }}"
         name: "{{ ipa_user.name | mandatory }}"
         password: "{{ ipa_user_password | default(omit) }}"
   when:

@@ -4,6 +4,8 @@ last: Account
 shell: /bin/false
 groups:
   - sysaccounts
+roles:
+  - Enrollment Administrator
 expirepassword: false
 email: noreply@example.io
 state: present

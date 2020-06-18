@@ -180,6 +180,8 @@ ipa otptoken-add --owner=${user_id}
 
 === RBAC
 
+TODO:
+
 Create FreeIPA service accounts.
 
 [source,bash]
@@ -190,8 +192,6 @@ ansible-playbook ansible/playbooks/provision-users.yml \
     --extra-vars "ipa_users_folder=variables/localhost/sysaccounts" \
     --extra-vars "ipa_user_id=*"
 ----
-
-TODO:
 
 == Hosts management
 
