@@ -1,4 +1,8 @@
 ipa_groups:
+  - name: sysaccounts
+    description: Service accounts for FreeIPA management
+    state: present
+
   - name: sysadmins
     description: Group for system administrators
     state: present
