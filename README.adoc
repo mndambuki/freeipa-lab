@@ -201,3 +201,4 @@ pass freeipa/localhost/ipadm/password
 
 - https://github.com/freeipa/freeipa
 - https://github.com/freeipa/ansible-freeipa
+- https://blog.delouw.ch/2018/07/02/centrally-manage-selinux-user-mapping-with-freeipa
