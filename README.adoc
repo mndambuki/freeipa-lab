@@ -107,7 +107,15 @@ ansible-playbook ansible/playbooks/topology.yml \
 
 === Default configuration
 
-WIP
+Modify default FreeIPA configuration.
+
+[source,bash]
+----
+ansible-playbook ansible/playbooks/modify-configuration.yml \
+    --inventory ansible/inventory/localhost.yml \
+    --extra-vars "@ansible/variables/localhost/main.yml" \
+    --extra-vars "@ansible/variables/localhost/default-configuration.yml"
+----
 
 == Users management
 
@@ -253,3 +261,4 @@ pass freeipa/localhost/ipadm/password
 - https://github.com/freeipa/freeipa
 - https://github.com/freeipa/ansible-freeipa
 - https://blog.delouw.ch/2018/07/02/centrally-manage-selinux-user-mapping-with-freeipa
+- https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html-single/using_selinux/index

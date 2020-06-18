@@ -1,0 +1,29 @@
+---
+- name: Playbook to modify IPA default configuration
+  hosts: ipaserver:ipareplicas
+  become: true
+  gather_facts: false
+  run_once: true
+  tasks:
+    - name: Show rendered SELinux map order
+      debug:
+        msg: "{{ ipa_default_configuration.selinuxusermaporder | join('$') | default(omit) }}"
+        verbosity: 1
+
+    - name: Modify FreeIPA default configuration
+      ipaconfig:
+        ipaadmin_principal: "{{ ipaadmin_principal | default(omit) }}"
+        ipaadmin_password: "{{ ipaadmin_password | mandatory }}"
+        maxusername: "{{ ipa_default_configuration.maxusername | default(omit) }}"
+        maxhostname: "{{ ipa_default_configuration.maxhostname | default(omit) }}"
+        homedirectory: "{{ ipa_default_configuration.homedirectory | default(omit) }}"
+        defaultshell: "{{ ipa_default_configuration.defaultshell | default(omit) }}"
+        defaultgroup: "{{ ipa_default_configuration.defaultgroup | default(omit) }}"
+        searchtimelimit: "{{ ipa_default_configuration.searchtimelimit | default(omit) }}"
+        searchrecordslimit: "{{ ipa_default_configuration.searchrecordslimit | default(omit) }}"
+        pac_type: "{{ ipa_default_configuration.pac_type | default(omit) }}"
+        user_auth_type: "{{ ipa_default_configuration.user_auth_type | default(omit) }}"
+        userobjectclasses: "{{ ipa_default_configuration.userobjectclasses | default(omit) }}"
+        groupobjectclasses: "{{ ipa_default_configuration.groupobjectclasses | default(omit) }}"
+        selinuxusermaporder: "{{ ipa_default_configuration.selinuxusermaporder | join('$') | default(omit) }}"
+        selinuxusermapdefault: "{{ ipa_default_configuration.selinuxusermapdefault | default(omit) }}"

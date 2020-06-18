@@ -1,0 +1,38 @@
+ipa_default_configuration:
+  maxusername: 32
+  maxhostname: 64
+  homedirectory: /home
+  defaultshell: /bin/bash
+  defaultgroup: ipausers
+  searchtimelimit: 2
+  searchrecordslimit: 100
+  pac_type: # http://www.kerberos.org/events/2010conf/2010slides/2010kerberos_dmitry_pal.pdf
+    - MS-PAC
+    - nfs:NONE
+  user_auth_type:
+    - password
+  userobjectclasses:
+    - top
+    - person
+    - organizationalperson
+    - inetorgperson
+    - inetuser
+    - posixaccount
+    - krbprincipalaux
+    - krbticketpolicyaux
+    - ipaobject
+    - ipasshuser
+  groupobjectclasses:
+    - top
+    - groupofnames
+    - nestedgroup
+    - ipausergroup
+    - ipaobject
+  selinuxusermaporder:
+    - guest_u:s0
+    - xguest_u:s0
+    - user_u:s0
+    - staff_u:s0-s0:c0.c1023
+    - sysadm_u:s0-s0:c0.c1023
+    - unconfined_u:s0-s0:c0.c1023
+  selinuxusermapdefault: staff_u:s0-s0:c0.c1023
