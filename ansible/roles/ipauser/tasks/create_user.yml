@@ -53,8 +53,8 @@
     - name: Print current groups for the user {{ ipa_user.name }}
       debug:
         msg:
-          - The user belongs to groups {{ ipa_user_groups_now | join(',') }}
-          - The user will belong to groups {{ ipa_user_groups_desired | join(',') }}
+          - The user belongs to groups {{ ipa_user_groups_now }}
+          - The user will belong to groups {{ ipa_user_groups_desired }}
         verbosity: 1
 
     - name: Get groups drift for the user {{ ipa_user.name }}
@@ -86,8 +86,8 @@
     - name: Print current roles for the user {{ ipa_user.name }}
       debug:
         msg:
-          - The user owns the roles {{ ipa_user_roles_now | join(',') }}
-          - The user will own the roles {{ ipa_user_roles_desired | join(',') }}
+          - The user owns the roles {{ ipa_user_roles_now }}
+          - The user will own the roles {{ ipa_user_roles_desired }}
         verbosity: 1
 
     - name: Get roles drift for the user {{ ipa_user.name }}
