@@ -16,3 +16,10 @@ ipaclient_no_ntp: no
 
 # IPA clients configuration
 ipaclient_mkhomedir: yes
+
+# User provisioning parameters
+ipa_user_password_to_file: yes
+ipa_user_password_to_file_path: ../auth.log
+
+ipa_user_password_to_pass: yes
+ipa_user_password_to_pass_path: freeipa/localhost

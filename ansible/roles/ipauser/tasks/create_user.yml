@@ -127,13 +127,19 @@
     - not ipa_user.expirepassword
 
 - name: Retrieve the password to the user {{ ipa_user.name }}
+  become: no
+  delegate_to: localhost
   block:
-    - name: Save the password for the new user into the auth.log file
-      become: no
-      delegate_to: localhost
-      lineinfile:
-        path: auth.log
-        create: yes
-        line: "{{ ipa_user.name }}@{{ ipa_user_password }}"
+    - name: Save the password for the user {{ ipa_user.name }} into a file
+      include_tasks: send_password_to_file.yml
+      when:
+        - ipa_user_password_to_file is defined
+        - ipa_user_password_to_file
+
+    - name: Save the password for the user {{ ipa_user.name }} into password manager
+      include_tasks: send_password_to_pass.yml
+      when:
+        - ipa_user_password_to_pass is defined
+        - ipa_user_password_to_pass
   when:
     - ipa_user_exists.failed
