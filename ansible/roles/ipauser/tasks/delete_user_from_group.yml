@@ -6,7 +6,6 @@
     ipa_pass: "{{ ipaadmin_password | mandatory }}"
     validate_certs: no
     name: "{{ ipa_user_group }}"
-    state: present
   register: ipa_group_info
 
 - name: Get membership for the group {{ ipa_user_group }}
@@ -22,6 +21,5 @@
     validate_certs: no
     name: "{{ ipa_user_group }}"
     user: "{{ ipa_group_members | difference([ ipa_user.name ]) }}"
-    state: present
   when:
     - ipa_user.name in ipa_group_members

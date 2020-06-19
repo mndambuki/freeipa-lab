@@ -6,7 +6,6 @@
     ipa_user: "{{ ipaadmin_principal | default(omit) }}"
     ipa_pass: "{{ ipaadmin_password | mandatory }}"
     validate_certs: no
-    state: present
   register: ipa_user_info
   when:
     - not ipa_user_exists.failed
