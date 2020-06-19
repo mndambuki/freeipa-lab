@@ -195,6 +195,18 @@ ansible-playbook ansible/playbooks/provision-users.yml \
 
 Provision (create, modify and delete) hosts as FreeIPA clients.
 
+=== Host groups
+
+Create FreeIPA host groups.
+
+[source,bash]
+----
+ansible-playbook ansible/playbooks/provision-host-groups.yml \
+    --inventory ansible/inventory/localhost.yml \
+    --extra-vars "@ansible/variables/localhost/main.yml" \
+    --extra-vars "@ansible/variables/localhost/host-groups.yml"
+----
+
 === Enrollment
 
 Enroll FreeIPA clients using Ansible.

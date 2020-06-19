@@ -5,7 +5,7 @@ shell: /bin/false
 groups:
   - sysaccounts
 roles:
-  - Enrollment Administrator
+  - IT Specialist
 expirepassword: false
 email: noreply@example.io
 state: present
