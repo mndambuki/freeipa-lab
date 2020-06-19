@@ -8,6 +8,8 @@
     validate_certs: no
     state: present
   register: ipa_user_info
+  when:
+    - not ipa_user_exists.failed
 
 - name: Generate a password for the user {{ ipa_user.name }}
   set_fact:
@@ -16,7 +18,7 @@
   when:
     - ipa_user_exists.failed
 
-- name: Create the FreeIPA user {{ ipa_user.name }}
+- name: Create the user {{ ipa_user.name }}
   ipauser:
     ipaadmin_principal: "{{ ipaadmin_principal | default(omit) }}"
     ipaadmin_password: "{{ ipaadmin_password | mandatory }}"
@@ -43,12 +45,12 @@
 
 - name: Manage groups for the user {{ ipa_user.name }}
   block:
-    - name:
+    - name: Get groups current state for the user {{ ipa_user.name }}
       set_fact:
         ipa_user_groups_now: "{{ ipa_user_info.user.memberof_group | default([]) }}"
-        ipa_user_groups_desired: "{{ (ipa_user.groups | default([])) + [ 'ipausers' ] }}"
+        ipa_user_groups_desired: "{{ (ipa_user.groups | default([])) + [ 'ipausers' ] }}" # TODO: Get default group from config
 
-    - name: "[INFO] Print current groups for the user {{ ipa_user.name }}"
+    - name: Print current groups for the user {{ ipa_user.name }}
       debug:
         msg:
           - The user belongs to groups {{ ipa_user_groups_now | join(',') }}
@@ -60,14 +62,14 @@
         ipa_user_groups_to_add: "{{ ipa_user_groups_desired | difference(ipa_user_groups_now) }}"
         ipa_user_groups_to_del: "{{ ipa_user_groups_now | difference(ipa_user_groups_desired) }}"
 
-    - name: Add user {{ ipa_user.name }} to groups
+    - name: Add user {{ ipa_user.name }} to new groups
       include_tasks: add_user_to_group.yml
       loop:
         "{{ ipa_user_groups_to_add | default([]) }}"
       loop_control:
         loop_var: ipa_user_group
 
-    - name: Delete user {{ ipa_user.name }} from groups
+    - name: Delete user {{ ipa_user.name }} from old groups
       include_tasks: delete_user_from_group.yml
       loop:
         "{{ ipa_user_groups_to_del | default([]) }}"
@@ -76,12 +78,12 @@
 
 - name: Manage roles for the user {{ ipa_user.name }}
   block:
-    - name:
+    - name: Get roles current state for the user {{ ipa_user.name }}
       set_fact:
         ipa_user_roles_now: "{{ ipa_user_info.user.memberof_role | default([]) }}"
         ipa_user_roles_desired: "{{ ipa_user.roles | default([]) }}"
 
-    - name: "[INFO] Print current roles for the user {{ ipa_user.name }}"
+    - name: Print current roles for the user {{ ipa_user.name }}
       debug:
         msg:
           - The user owns the roles {{ ipa_user_roles_now | join(',') }}
@@ -93,14 +95,14 @@
         ipa_user_roles_to_add: "{{ ipa_user_roles_desired | difference(ipa_user_roles_now) }}"
         ipa_user_roles_to_del: "{{ ipa_user_roles_now | difference(ipa_user_roles_desired) }}"
 
-    - name: Add roles to the user {{ ipa_user.name }}
+    - name: Add new roles to the user {{ ipa_user.name }}
       include_tasks: add_role_to_user.yml
       loop:
         "{{ ipa_user_roles_to_add | default([]) }}"
       loop_control:
         loop_var: ipa_user_role
 
-    - name: Delete roles from the user {{ ipa_user.name }}
+    - name: Delete old roles from the user {{ ipa_user.name }}
       include_tasks: delete_role_from_user.yml
       loop:
         "{{ ipa_user_roles_to_del | default([]) }}"
