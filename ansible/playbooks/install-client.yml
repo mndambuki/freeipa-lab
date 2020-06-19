@@ -1,5 +1,26 @@
 ---
-- name: Playbook to unconfigure IPA clients
+- name: Playbook to provision IPA host groups
+  hosts: ipaserver:ipareplicas
+  become: true
+  gather_facts: false
+  run_once: true
+  tasks:
+    - name: Add host "{{ ipa_host_name }}" to host groups
+      vars:
+        ipaadmin_principal: "{{ ipaadmin_principal | default(omit) }}"
+        ipaadmin_password: "{{ ipaadmin_password | mandatory }}"
+        ipa_host:
+          name: "{{ ipa_host_name }}"
+          groups: "{{ hostvars[ipa_host_name].host_groups | default([]) }}"
+          state: present
+      include_role:
+        name: ipaclient-enroll
+      loop:
+        "{{ groups.ipaclients }}"
+      loop_control:
+        loop_var: ipa_host_name
+
+- name: Playbook to install IPA clients
   hosts: ipaclients
   become: true
   serial: 1

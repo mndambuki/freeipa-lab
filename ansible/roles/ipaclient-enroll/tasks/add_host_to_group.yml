@@ -1,0 +1,18 @@
+---
+- name: Get information for the group {{ ipa_host_group }}
+  ipa_hostgroup:
+    ipa_host: localhost
+    ipa_user: "{{ ipaadmin_principal | default(omit) }}"
+    ipa_pass: "{{ ipaadmin_password | mandatory }}"
+    validate_certs: no
+    name: "{{ ipa_host_group }}"
+  register: ipa_host_group_info
+
+- name: Add host {{ ipa_host.name }} to the group {{ ipa_host_group }}
+  ipa_hostgroup:
+    ipa_host: localhost
+    ipa_user: "{{ ipaadmin_principal | default(omit) }}"
+    ipa_pass: "{{ ipaadmin_password | mandatory }}"
+    validate_certs: no
+    name: "{{ ipa_host_group }}"
+    host: "{{ (ipa_host_group_info.hostgroup.member_host | default([])) + [ ipa_host.name ] }}"

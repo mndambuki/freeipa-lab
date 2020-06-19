@@ -1,0 +1,25 @@
+---
+- name: Get information for the group {{ ipa_host_group }}
+  ipa_hostgroup:
+    ipa_host: localhost
+    ipa_user: "{{ ipaadmin_principal | default(omit) }}"
+    ipa_pass: "{{ ipaadmin_password | mandatory }}"
+    validate_certs: no
+    name: "{{ ipa_host_group }}"
+  register: ipa_host_group_info
+
+- name: Get membership for the group {{ ipa_host_group }}
+  set_fact:
+    ipa_host_group_members: "{{ ipa_host_group_info.hostgroup.member_host | default([]) }}"
+    ipa_host_group_indirect_members: "{{ ipa_host_group_info.hostgroup.memberindirect_host | default([]) }}"
+
+- name: Delete user {{ ipa_host.name }} from the group {{ ipa_host_group }}
+  ipa_hostgroup:
+    ipa_host: localhost
+    ipa_user: "{{ ipaadmin_principal | default(omit) }}"
+    ipa_pass: "{{ ipaadmin_password | mandatory }}"
+    validate_certs: no
+    name: "{{ ipa_host_group }}"
+    host: "{{ ipa_host_group_members | difference([ ipa_host.name ]) }}"
+  when:
+    - ipa_host.name in ipa_host_group_members

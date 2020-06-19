@@ -209,13 +209,33 @@ ansible-playbook ansible/playbooks/provision-host-groups.yml \
 
 === Enrollment
 
-Enroll FreeIPA clients using Ansible.
+Enroll FreeIPA clients using Ansible in two steps.
+
+[source,bash]
+----
+ansible-playbook ansible/playbooks/provision-hosts.yml \
+    --inventory ansible/inventory/localhost.yml \
+    --extra-vars "@ansible/variables/localhost/main.yml" \
+    --extra-vars "@ansible/variables/localhost/host-groups.yml" \
+    --extra-vars "ipa_hosts_folder=variables/localhost/hosts" \
+    --extra-vars "ipa_host_id=*"
+----
+
+Then, get into the host an run the following command.
+
+[source,bash]
+----
+ipa-client-install
+----
+
+Or enroll FreeIPA clients using Ansible in one step.
 
 [source,bash]
 ----
 ansible-playbook ansible/playbooks/install-client.yml \
     --inventory ansible/inventory/localhost.yml \
-    --extra-vars "@ansible/variables/localhost/main.yml"
+    --extra-vars "@ansible/variables/localhost/main.yml" \
+    --extra-vars "@ansible/variables/localhost/host-groups.yml"
 ----
 
 === HBAC

@@ -1,0 +1,57 @@
+---
+- name: Create the host {{ ipa_host.name }}
+  ipa_host:
+    ipa_host: localhost
+    ipa_user: "{{ ipaadmin_principal | default(omit) }}"
+    ipa_pass: "{{ ipaadmin_password | mandatory }}"
+    validate_certs: no
+    name: "{{ ipa_host.name }}"
+    force: yes
+    update_dns: no
+  register: ipa_host_info
+
+- name: Generate enrollment password for the host {{ ipa_host.name }}
+  ipa_host:
+    ipa_host: localhost
+    ipa_user: "{{ ipaadmin_principal | default(omit) }}"
+    ipa_pass: "{{ ipaadmin_password | mandatory }}"
+    validate_certs: no
+    name: "{{ ipa_host.name }}"
+    random_password: yes
+    force: yes
+    update_dns: no
+  when:
+    - ipa_host_info.changed
+
+- name: Manage groups for the host {{ ipa_host.name }}
+  block:
+    - name: Get groups current state for the host {{ ipa_host.name }}
+      set_fact:
+        ipa_host_groups_now: "{{ ipa_host_info.host.memberof_hostgroup | default([]) }}"
+        ipa_host_groups_desired: "{{ (ipa_host.groups | default([])) }}"
+
+    - name: Print current groups for the host {{ ipa_host.name }}
+      debug:
+        msg:
+          - The host belongs to groups {{ ipa_host_groups_now }}
+          - The host will belong to groups {{ ipa_host_groups_desired }}
+        verbosity: 1
+
+    - name: Get groups drift for the host {{ ipa_host.name }}
+      set_fact:
+        ipa_host_groups_to_add: "{{ ipa_host_groups_desired | difference(ipa_host_groups_now) }}"
+        ipa_host_groups_to_del: "{{ ipa_host_groups_now | difference(ipa_host_groups_desired) }}"
+
+    - name: Add host {{ ipa_host.name }} to new groups
+      include_tasks: add_host_to_group.yml
+      loop:
+        "{{ ipa_host_groups_to_add | default([]) }}"
+      loop_control:
+        loop_var: ipa_host_group
+
+    - name: Delete host {{ ipa_host.name }} from old groups
+      include_tasks: delete_host_from_group.yml
+      loop:
+        "{{ ipa_host_groups_to_del | default([]) }}"
+      loop_control:
+        loop_var: ipa_host_group

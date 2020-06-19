@@ -1,0 +1,15 @@
+---
+- name: Check if ipa_host variable is defined
+  fail:
+    msg: "ipa_host variable is not defined, check README.md"
+  when: ipa_host is not defined
+
+- name: Include tasks for creating the host {{ ipa_host.name }}
+  include_tasks: create_host.yml
+  when:
+    - ipa_host.state == "present"
+
+- name: Include tasks for deleting/disabling the host {{ ipa_host }}
+  include_tasks: delete_host.yml
+  when:
+    - ipa_host.state != "present"

@@ -22,3 +22,6 @@ ipaclients:
     ansible_ssh_private_key_file: src/ssh/maintuser/id_rsa
   hosts:
     ipabastion.test.local:
+      host_groups:
+        - bastions
+        - datacenter-core
