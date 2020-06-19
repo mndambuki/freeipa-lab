@@ -180,8 +180,6 @@ ipa otptoken-add --owner=${user_id}
 
 === RBAC
 
-TODO:
-
 Create FreeIPA service accounts.
 
 [source,bash]
