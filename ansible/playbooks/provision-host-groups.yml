@@ -1,0 +1,35 @@
+---
+- name: Playbook to provision IPA host groups
+  hosts: ipaserver:ipareplicas
+  become: true
+  gather_facts: false
+  run_once: true
+  tasks:
+    - name: Create FreeIPA host groups
+      ipahostgroup:
+        ipaadmin_principal: "{{ ipaadmin_principal | default(omit) }}"
+        ipaadmin_password: "{{ ipaadmin_password | mandatory }}"
+        name: "{{ ipa_host_group.name | mandatory }}"
+        description: "{{ ipa_host_group.description | default(omit) }}"
+        hostgroup: "{{ ipa_host_group.groups | default([]) }}"
+      loop:
+        "{{ ipa_host_groups }}"
+      loop_control:
+        loop_var: ipa_host_group
+      when: >
+        ipa_host_group.state is not defined or
+        ipa_host_group.state == "present"
+
+    - name: Delete FreeIPA host groups
+      ipagroup:
+        ipaadmin_principal: "{{ ipaadmin_principal | default(omit) }}"
+        ipaadmin_password: "{{ ipaadmin_password | mandatory }}"
+        name: "{{ ipa_host_group.name | mandatory }}"
+        state: "{{ ipa_host_group.state | mandatory }}"
+      loop:
+        "{{ ipa_host_groups }}"
+      loop_control:
+        loop_var: ipa_host_group
+      when:
+        - ipa_host_group.state is defined
+        - ipa_host_group.state != "present"

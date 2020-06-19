@@ -1,0 +1,27 @@
+ipaadmin_principal: hosts-provisioner
+ipaadmin_password: "{{ lookup('passwordstore', 'freeipa/localhost/hosts-provisioner/password') }}"
+
+ipa_host_groups:
+  - name: datacenter-core
+    description: Host group for machines in DC core
+    state: present
+
+  - name: bastions
+    description: Host group for bastion machines
+    state: present
+
+  - name: webservers
+    description: Host group for web servers machines
+    state: present
+
+  - name: dmz-internal
+    description: Host group for machines in internal DMZ
+    state: present
+    groups:
+      - bastions
+
+  - name: dmz-public
+    description: Host group for machines in public DMZ
+    state: present
+    groups:
+      - webservers
