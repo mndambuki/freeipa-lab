@@ -1,0 +1,22 @@
+ipaadmin_principal: hbac-provisioner
+ipaadmin_password: "{{ lookup('passwordstore', 'freeipa/localhost/hbac-provisioner/password') }}"
+
+ipa_hbac_rules:
+  - name: allow_infrastructure_ssh
+    source:
+      groups:
+        - infrastructure
+    destination:
+      hostcategory: all
+      services:
+        - sshd
+
+  - name: allow_sysadmins_sudo_iamservers
+    source:
+      groups:
+        - sysadmins
+    destination:
+      hosts_groups:
+        - iamservers
+      services_groups:
+        - Sudo

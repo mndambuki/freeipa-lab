@@ -1,0 +1,21 @@
+ipaadmin_principal: sudo-provisioner
+ipaadmin_password: "{{ lookup('passwordstore', 'freeipa/localhost/sudo-provisioner/password') }}"
+
+ipa_sudo_commands:
+  - name: /bin/systemctl
+  - name: /usr/bin/vi
+
+ipa_sudo_rules:
+  - name: allow_sysadmins_to_sudo_iamservers
+    sudooption:
+      - role=sysadm_r
+    source:
+      groups:
+        - sysadmins
+    destination:
+      hosts_groups:
+        - iamservers
+      sudo_commands:
+        - /bin/systemctl
+        - /usr/bin/vi
+      # cmdcategory: all # (sudo -i)

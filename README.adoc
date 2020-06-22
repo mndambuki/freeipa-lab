@@ -246,14 +246,21 @@ Manage HBAC rules.
 ----
 ansible-playbook ansible/playbooks/configure-hbac.yml \
     --inventory ansible/inventory/localhost.yml \
-    --extra-vars "@ansible/variables/localhost/main.yml"
+    --extra-vars "@ansible/variables/localhost/main.yml" \
+    --extra-vars "@ansible/variables/localhost/hbac-rules.yml"
 ----
 
 === Sudo rules
 
 Manage sudo rules.
 
-TODO:
+[source,bash]
+----
+ansible-playbook ansible/playbooks/configure-sudo.yml \
+    --inventory ansible/inventory/localhost.yml \
+    --extra-vars "@ansible/variables/localhost/main.yml" \
+    --extra-vars "@ansible/variables/localhost/sudo-rules.yml"
+----
 
 *IMPORTANT*: If sudo rules are weak, it is possible to escalate privileges:
 

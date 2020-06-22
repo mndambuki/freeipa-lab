@@ -1,0 +1,11 @@
+name: hbac-provisioner
+first: Service
+last: Account
+shell: /bin/false
+groups:
+  - sysaccounts
+roles:
+  - IT Security Specialist
+expirepassword: false
+email: noreply@example.io
+state: present

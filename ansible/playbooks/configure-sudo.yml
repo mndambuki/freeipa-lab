@@ -1,0 +1,54 @@
+---
+- name: Playbook to manage sudo rules
+  hosts: ipaserver:ipareplicas
+  become: true
+  gather_facts: false
+  run_once: true
+  tasks:
+    - name: Manage FreeIPA sudo commands
+      ipasudocmd:
+        ipaadmin_principal: "{{ ipaadmin_principal | default(omit) }}"
+        ipaadmin_password: "{{ ipaadmin_password | mandatory }}"
+        name: "{{ ipa_sudo_command.name }}"
+        state: "{{ ipa_sudo_command.state | default('present') }}"
+      loop:
+        "{{ ipa_sudo_commands }}"
+      loop_control:
+        loop_var: ipa_sudo_command
+
+    - name: Create FreeIPA sudo rules
+      ipasudorule:
+        ipaadmin_principal: "{{ ipaadmin_principal | default(omit) }}"
+        ipaadmin_password: "{{ ipaadmin_password | mandatory }}"
+        name: "{{ ipa_sudo_rule.name | mandatory }}"
+        sudooption: "{{ ipa_sudo_rule.sudooption | default(omit) }}"
+        user: "{{ ipa_sudo_rule.source.users | default(omit) }}"
+        group: "{{ ipa_sudo_rule.source.groups | default(omit) }}"
+        userategory: "{{ ipa_sudo_rule.source.userategory | default(omit) }}"
+        host: "{{ ipa_sudo_rule.destination.hosts | default(omit) }}"
+        hostgroup: "{{ ipa_sudo_rule.destination.hosts_groups | default(omit) }}"
+        hostcategory: "{{ ipa_sudo_rule.destination.hostcategory | default(omit) }}"
+        allow_sudocmd: "{{ ipa_sudo_rule.destination.sudo_commands | default(omit) }}"
+        allow_sudocmdgroup: "{{ ipa_sudo_rule.destination.sudo_commands_groups | default(omit) }}"
+        cmdcategory: "{{ ipa_sudo_rule.destination.servicecategory | default(omit) }}"
+      loop:
+        "{{ ipa_sudo_rules }}"
+      loop_control:
+        loop_var: ipa_sudo_rule
+      when: >
+        ipa_sudo_rule.state is not defined or
+        ipa_sudo_rule.state == "present"
+
+    - name: Delete FreeIPA sudo rules
+      ipasudorule:
+        ipaadmin_principal: "{{ ipaadmin_principal | default(omit) }}"
+        ipaadmin_password: "{{ ipaadmin_password | mandatory }}"
+        name: "{{ ipa_sudo_rule.name | mandatory }}"
+        state: "{{ ipa_sudo_rule.state }}"
+      loop:
+        "{{ ipa_sudo_rules }}"
+      loop_control:
+        loop_var: ipa_sudo_rule
+      when:
+        - ipa_sudo_rule.state is defined
+        - ipa_sudo_rule.state != "present"

@@ -6,6 +6,11 @@ ipa_host_groups:
     description: Host group for machines in DC core
     state: present
 
+  # TODO: Use ipaservers group when solved https://pagure.io/freeipa/issue/7284
+  - name: iamservers
+    description: Host group for FreeIPA machines
+    state: present
+
   - name: bastions
     description: Host group for bastion machines
     state: present
@@ -18,6 +23,7 @@ ipa_host_groups:
     description: Host group for machines in internal DMZ
     state: present
     groups:
+      - iamservers
       - bastions
 
   - name: dmz-public

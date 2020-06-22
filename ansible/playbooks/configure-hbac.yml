@@ -7,50 +7,36 @@
   tasks:
     - name: Create FreeIPA HBAC rules
       ipahbacrule:
-        name: allow_infrastructure_ssh_to_bastion
-        state: present
         ipaadmin_principal: "{{ ipaadmin_principal | default(omit) }}"
         ipaadmin_password: "{{ ipaadmin_password | mandatory }}"
-        group:
-          - infrastructure
-        hbacsvc:
-          - sshd
-        host:
-          - bastion.test.local
+        name: "{{ ipa_hbac_rule.name | mandatory }}"
+        user: "{{ ipa_hbac_rule.source.users | default(omit) }}"
+        group: "{{ ipa_hbac_rule.source.groups | default(omit) }}"
+        userategory: "{{ ipa_hbac_rule.source.userategory | default(omit) }}"
+        host: "{{ ipa_hbac_rule.destination.hosts | default(omit) }}"
+        hostgroup: "{{ ipa_hbac_rule.destination.hosts_groups | default(omit) }}"
+        hostcategory: "{{ ipa_hbac_rule.destination.hostcategory | default(omit) }}"
+        hbacsvc: "{{ ipa_hbac_rule.destination.services | default(omit) }}"
+        hbacsvcgroup: "{{ ipa_hbac_rule.destination.services_groups | default(omit) }}"
+        servicecategory: "{{ ipa_hbac_rule.destination.servicecategory | default(omit) }}"
+      loop:
+        "{{ ipa_hbac_rules }}"
+      loop_control:
+        loop_var: ipa_hbac_rule
+      when: >
+        ipa_hbac_rule.state is not defined or
+        ipa_hbac_rule.state == "present"
 
-    - name: Create FreeIPA HBAC rules
+    - name: Delete FreeIPA HBAC rules
       ipahbacrule:
-        name: allow_infrastructure_sudo_to_bastion
-        state: present
         ipaadmin_principal: "{{ ipaadmin_principal | default(omit) }}"
         ipaadmin_password: "{{ ipaadmin_password | mandatory }}"
-        group:
-          - infrastructure
-        hbacsvcgroup:
-          - Sudo
-        host:
-          - bastion.test.local
-
-    - name: Manage FreeIPA sudo rules
-      block:
-        - name: Create sudo commands
-          ipasudocmd:
-            ipaadmin_principal: "{{ ipaadmin_principal | default(omit) }}"
-            ipaadmin_password: "{{ ipaadmin_password | mandatory }}"
-            name:
-              - /usr/bin/vi
-            state: present
-
-        - name: Create sudo rules
-          ipasudorule:
-            name: allow_infrastructure_sudo_to_bastion
-            state: present
-            ipaadmin_principal: "{{ ipaadmin_principal | default(omit) }}"
-            ipaadmin_password: "{{ ipaadmin_password | mandatory }}"
-            group:
-              - infrastructure
-            allow_sudocmd:
-              - /usr/bin/vi
-            #cmdcategory: all
-            host:
-              - bastion.test.local
+        name: "{{ ipa_hbac_rule.name | mandatory }}"
+        state: "{{ ipa_hbac_rule.state }}"
+      loop:
+        "{{ ipa_hbac_rules }}"
+      loop_control:
+        loop_var: ipa_hbac_rule
+      when:
+        - ipa_hbac_rule.state is defined
+        - ipa_hbac_rule.state != "present"
