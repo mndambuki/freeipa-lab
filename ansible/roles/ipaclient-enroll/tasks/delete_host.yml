@@ -1,0 +1,9 @@
+---
+- name: Delete the host {{ ipa_host.name }}
+  ipa_host:
+    ipa_host: localhost
+    ipa_user: "{{ ipaadmin_principal | default(omit) }}"
+    ipa_pass: "{{ ipaadmin_password | mandatory }}"
+    validate_certs: no
+    name: "{{ ipa_host.name }}"
+    state: "{{ ipa_host.state }}"

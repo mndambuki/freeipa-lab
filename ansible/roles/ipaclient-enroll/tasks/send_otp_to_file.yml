@@ -1,0 +1,12 @@
+---
+- name: Create the file {{ ipa_host_otp_to_file_path }}
+  file:
+    path: "{{ ipa_host_otp_to_file_path | mandatory }}"
+    mode: '0600'
+    state: touch
+
+- name: Save the OTP for the host {{ ipa_host.name }} in the file {{ ipa_host_otp_to_file_path }}
+  no_log: true
+  lineinfile:
+    path: "{{ ipa_host_otp_to_file_path | mandatory }}"
+    line: "{{ ipa_host.name }}@{{ ipa_host_otp }}"

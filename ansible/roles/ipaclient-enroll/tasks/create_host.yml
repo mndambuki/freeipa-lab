@@ -10,16 +10,32 @@
     update_dns: no
   register: ipa_host_info
 
-- name: Generate enrollment password for the host {{ ipa_host.name }}
-  ipa_host:
-    ipa_host: localhost
-    ipa_user: "{{ ipaadmin_principal | default(omit) }}"
-    ipa_pass: "{{ ipaadmin_password | mandatory }}"
-    validate_certs: no
-    name: "{{ ipa_host.name }}"
-    random_password: yes
-    force: yes
-    update_dns: no
+- name: Generate enrollment OTP for the host {{ ipa_host.name }}
+  block:
+    - name: Generate OTP for the host {{ ipa_host.name }}
+      ipa_host:
+        ipa_host: localhost
+        ipa_user: "{{ ipaadmin_principal | default(omit) }}"
+        ipa_pass: "{{ ipaadmin_password | mandatory }}"
+        validate_certs: no
+        name: "{{ ipa_host.name }}"
+        random_password: yes
+        force: yes
+        update_dns: no
+      register: ipa_host_handler
+
+    - name: Retrieve the OTP to the host {{ ipa_host.name }}
+      become: no
+      delegate_to: localhost
+      block:
+        - name: Save the OTP for the host {{ ipa_user.name }} into a file
+          vars:
+            ipa_host_otp_to_file_path: "{{ ipa_host_otp_to_file_path | mandatory }}"
+            ipa_host_otp: "{{ ipa_host_handler.host.randompassword }}"
+          include_tasks: send_otp_to_file.yml
+          when:
+            - ipa_host_otp_to_file is defined
+            - ipa_host_otp_to_file
   when:
     - ipa_host_info.changed
 

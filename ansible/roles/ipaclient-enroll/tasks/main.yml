@@ -9,7 +9,7 @@
   when:
     - ipa_host.state == "present"
 
-- name: Include tasks for deleting/disabling the host {{ ipa_host }}
+- name: Include tasks for deleting the host {{ ipa_host }}
   include_tasks: delete_host.yml
   when:
     - ipa_host.state != "present"

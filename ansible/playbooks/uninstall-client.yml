@@ -1,0 +1,28 @@
+---
+- name: Playbook to unconfigure IPA servers
+  hosts: ipaclients
+  become: true
+  roles:
+    - role: ipaclient
+      state: absent
+
+- name: Playbook to deprovision IPA hosts
+  hosts: ipaserver:ipareplicas
+  become: true
+  gather_facts: false
+  run_once: true
+  tasks:
+    - name: Delete host "{{ ipa_host_name }}"
+      vars:
+        ipaadmin_principal: "{{ ipaadmin_principal | default(omit) }}"
+        ipaadmin_password: "{{ ipaadmin_password | mandatory }}"
+        ipa_host:
+          name: "{{ ipa_host_name }}"
+          groups: "{{ hostvars[ipa_host_name].host_groups | default([]) }}"
+          state: absent
+      include_role:
+        name: ipaclient-enroll
+      loop:
+        "{{ groups.ipaclients }}"
+      loop_control:
+        loop_var: ipa_host_name

@@ -1,0 +1,36 @@
+---
+- name: Playbook to provision IPA hosts
+  hosts: ipaserver:ipareplicas
+  become: true
+  gather_facts: false
+  run_once: true
+  tasks:
+    - name: Create FreeIPA hosts
+      vars:
+        ipaadmin_principal: "{{ ipaadmin_principal | default(omit) }}"
+        ipaadmin_password: "{{ ipaadmin_password | mandatory }}"
+        ipa_host: "{{ ipa_host }}"
+      include_role:
+        name: ipaclient-enroll
+      loop:
+        "{{ ipa_hosts }}"
+      loop_control:
+        loop_var: ipa_host
+      when: >
+        ipa_host.state is not defined or
+        ipa_host.state == "present"
+
+    - name: Delete FreeIPA hosts
+      vars:
+        ipaadmin_principal: "{{ ipaadmin_principal | default(omit) }}"
+        ipaadmin_password: "{{ ipaadmin_password | mandatory }}"
+        ipa_host: "{{ ipa_host }}"
+      include_role:
+        name: ipaclient-enroll
+      loop:
+        "{{ ipa_hosts }}"
+      loop_control:
+        loop_var: ipa_host
+      when:
+        - ipa_host.state is defined
+        - ipa_host.state != "present"
