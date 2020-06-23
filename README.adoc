@@ -303,7 +303,11 @@ ldapsearch -W -H ldap://ipaserver.test.local \
 
 == Disaster recovery
 
-Perform a full or data backup.
+Backup and restore FreeIPA data.
+
+=== Backup
+
+Perform a full backup.
 
 [source,bash]
 ----
@@ -313,6 +317,8 @@ ansible-playbook ansible/playbooks/backup-server.yml \
     --extra-vars "ipa_backup_type=full"
 ----
 
+Perform a data-only backup.
+
 [source,bash]
 ----
 ansible-playbook ansible/playbooks/backup-server.yml \
@@ -321,7 +327,15 @@ ansible-playbook ansible/playbooks/backup-server.yml \
     --extra-vars "ipa_backup_type=data-only"
 ----
 
-Restore data from
+=== Restore
+
+Copy backup to FreeIPA server and restore using `+ipa-restore+` utility.
+
+[source,bash]
+----
+ipa-restore ${IPA_BACKUP_PATH}
+----
+
 == Troubleshooting
 
 === Terraform
