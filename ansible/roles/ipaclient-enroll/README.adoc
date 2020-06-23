@@ -1,6 +1,6 @@
-= ipaclient-enroll
+= ipahost
 
-Create a new host generating an OTP for enrollment and adding to the corresponding groups.
+Create a new host generating an OTP for enrollment and add it to the corresponding groups.
 
 == Role Variables
 
@@ -36,5 +36,5 @@ Example of how to use this role.
         ipaadmin_password: "{{ ipaadmin_password }}"
         ipa_host: "{{ new_ipa_host }}"
       include_role:
-        name: ipaclient-enroll
+        name: ipahost
 ----

@@ -11,7 +11,7 @@
         ipaadmin_password: "{{ ipaadmin_password | mandatory }}"
         ipa_host: "{{ ipa_host }}"
       include_role:
-        name: ipaclient-enroll
+        name: ipahost
       loop:
         "{{ ipa_hosts }}"
       loop_control:
@@ -26,7 +26,7 @@
         ipaadmin_password: "{{ ipaadmin_password | mandatory }}"
         ipa_host: "{{ ipa_host }}"
       include_role:
-        name: ipaclient-enroll
+        name: ipahost
       loop:
         "{{ ipa_hosts }}"
       loop_control:

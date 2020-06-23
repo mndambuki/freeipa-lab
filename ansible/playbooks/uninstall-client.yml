@@ -21,7 +21,7 @@
           groups: "{{ hostvars[ipa_host_name].host_groups | default([]) }}"
           state: absent
       include_role:
-        name: ipaclient-enroll
+        name: ipahost
       loop:
         "{{ groups.ipaclients }}"
       loop_control:
