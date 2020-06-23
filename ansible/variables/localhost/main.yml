@@ -17,17 +17,20 @@ ipaclient_no_ntp: no
 # IPA clients configuration
 ipaclient_mkhomedir: yes
 
-# User provisioning parameters
+# User provisioning configuration
 ipa_user_password_to_file: yes
 ipa_user_password_to_file_path: ../user-auth.log
 
 ipa_user_password_to_pass: yes
 ipa_user_password_to_pass_path: freeipa/localhost
 
-# Host provisioning parameters
+# Host provisioning configuration
 ipa_host_otp_to_file: yes
 ipa_host_otp_to_file_path: ../host-auth.log
 
-# LDAP accounts parameters
+# LDAP accounts configuration
 ldap_account_password_to_file: yes
 ldap_account_password_to_file_path: ../ldap-auth.log
+
+# Backup configuration
+ipa_backup_dst_folder: /tmp/ipa

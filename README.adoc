@@ -303,8 +303,25 @@ ldapsearch -W -H ldap://ipaserver.test.local \
 
 == Disaster recovery
 
-TODO:
+Perform a full or data backup.
 
+[source,bash]
+----
+ansible-playbook ansible/playbooks/backup-server.yml \
+    --inventory ansible/inventory/localhost.yml \
+    --extra-vars "@ansible/variables/localhost/main.yml" \
+    --extra-vars "ipa_backup_type=full"
+----
+
+[source,bash]
+----
+ansible-playbook ansible/playbooks/backup-server.yml \
+    --inventory ansible/inventory/localhost.yml \
+    --extra-vars "@ansible/variables/localhost/main.yml" \
+    --extra-vars "ipa_backup_type=data-only"
+----
+
+Restore data from
 == Troubleshooting
 
 === Terraform

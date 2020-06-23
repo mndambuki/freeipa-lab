@@ -1,0 +1,72 @@
+---
+- name: Playbook to perform FreeIPA backup
+  hosts: ipaserver:ipareplicas
+  become: true
+  gather_facts: false
+  serial: 1
+  vars:
+    ipa_backup_src_folder: /var/lib/ipa/backup # Hard-coded in FreeIPA code
+  tasks:
+    - name: Check if ipa_backup_type is defined
+      fail:
+        msg: "The value for ipa_backup_type is not supported or not defined, only full or data-only options are available."
+      when: >
+        ipa_backup_type is not defined or
+        (
+          ipa_backup_type != "full" and
+          ipa_backup_type != "data-only"
+        )
+
+    - name: Set flags for data-only backup
+      set_fact:
+        ipa_backup_options: --data --online
+      when:
+        - ipa_backup_type == "data-only"
+
+    - name: Perform a {{ ipa_backup_type }} backup
+      environment:
+        TMPDIR: /tmp
+      command:
+        ipa-backup {{ ipa_backup_options | default(omit) }}
+
+    - name: Get list of last backups in {{ ipa_backup_src_folder }} folder
+      find:
+        paths: "{{ ipa_backup_src_folder }}"
+        file_type: directory
+        age: -1h
+      register: ipa_backup_files
+
+    - name: Get latest backup
+      set_fact:
+        ipa_backup_latest: "{{ ipa_backup_files.files | sort(attribute='mtime', reverse=true) | first }}"
+
+    - name: Get full path for the latest backup
+      set_fact:
+        ipa_backup_path: "{{ ipa_backup_latest.path }}"
+
+    - name: Set backup name
+      set_fact:
+        ipa_backup_name:
+          "{{ ipa_backup_latest.path | dirname }}/{{ inventory_hostname | replace('.', '-') }}-{{ ipa_backup_path | basename }}"
+
+    - name: Compress backup
+      archive:
+        path: "{{ ipa_backup_path }}"
+        dest: "{{ ipa_backup_name }}.gz"
+        format: gz
+
+    - name: Copy backup to local folder {{ ipa_backup_dst_folder }}
+      fetch:
+        src: "{{ ipa_backup_name }}.gz"
+        dest: "{{ ipa_backup_dst_folder }}/"
+        flat: yes
+
+    - name: Prune backup files
+      file:
+        path: "{{ ipa_backup_file }}"
+        state: absent
+      loop:
+        - "{{ ipa_backup_path }}/"
+        - "{{ ipa_backup_name }}.gz"
+      loop_control:
+        loop_var: ipa_backup_file
