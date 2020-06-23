@@ -1,0 +1,40 @@
+= ipaclient-enroll
+
+Create a new host generating an OTP for enrollment and adding to the corresponding groups.
+
+== Role Variables
+
+A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+
+[cols="1,1,1,4",align="center",options="header",]
+|===
+| *Name*                     | *Type* | *Mandatory* | *Description*
+| ipaadmin_principal         | string | yes         | User to authenticate against FreeIPA
+| ipaadmin_password          | string | yes         | Password to authenticate against FreeIPA
+| ipa_host                   | dict   | yes         | Contains the new FreeIPA host information
+| ipa_host.name              | string | yes         | FQDN for the new host
+| ipa_host.groups            | list   | no          | Groups the host belongs to
+| ipa_host_otp_to_file       | bool   | no          | Flag to store OTP in a file
+| ipa_host_otp_to_file_path  | string | no          | File to store the generated OTP for each host
+|===
+
+== Example Playbook
+
+Example of how to use this role.
+
+[source,yaml]
+----
+- name: Playbook to provision FreeIPA hosts
+  hosts: ipaserver:ipareplicas
+  become: true
+  gather_facts: false
+  run_once: true
+  tasks:
+    - name: Provision FreeIPA hosts
+      vars:
+        ipaadmin_principal: "{{ ipaadmin_principal }}"
+        ipaadmin_password: "{{ ipaadmin_password }}"
+        ipa_host: "{{ new_ipa_host }}"
+      include_role:
+        name: ipaclient-enroll
+----
