@@ -1,5 +1,5 @@
 ---
-- name: Playbook to manage IPA password policies
+- name: Playbook to manage FreeIPA password policies
   hosts: ipaserver:ipareplicas
   become: true
   gather_facts: false

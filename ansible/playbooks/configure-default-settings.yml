@@ -1,5 +1,5 @@
 ---
-- name: Playbook to modify IPA default configuration
+- name: Playbook to modify FreeIPA default configuration
   hosts: ipaserver:ipareplicas
   become: true
   gather_facts: false

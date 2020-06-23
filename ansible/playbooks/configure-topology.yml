@@ -1,5 +1,5 @@
 ---
-- name: Playbook to manage IPA topology segments
+- name: Playbook to manage FreeIPA topology segments
   hosts: ipaserver:ipareplicas
   become: true
   gather_facts: false

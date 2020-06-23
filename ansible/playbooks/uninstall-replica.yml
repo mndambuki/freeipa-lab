@@ -1,5 +1,5 @@
 ---
-- name: Playbook to unconfigure IPA servers
+- name: Playbook to unconfigure FreeIPA servers
   hosts: ipareplicas
   become: true
 

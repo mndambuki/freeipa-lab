@@ -1,5 +1,5 @@
 ---
-- name: Playbook to configure IPA servers
+- name: Playbook to configure FreeIPA servers
   hosts: ipareplicas
   become: true
   serial: 1
@@ -36,5 +36,5 @@
       with_items:
         - "^([ ]*)(return self.marshal\\(result, RefererError\\(referer)"
 
-    - name: Restart IPA services
+    - name: Restart FreeIPA services
       command: ipactl restart

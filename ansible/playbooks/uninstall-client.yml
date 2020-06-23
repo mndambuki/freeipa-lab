@@ -1,12 +1,12 @@
 ---
-- name: Playbook to unconfigure IPA servers
+- name: Playbook to unconfigure FreeIPA servers
   hosts: ipaclients
   become: true
   roles:
     - role: ipaclient
       state: absent
 
-- name: Playbook to deprovision IPA hosts
+- name: Playbook to deprovision FreeIPA hosts
   hosts: ipaserver:ipareplicas
   become: true
   gather_facts: false

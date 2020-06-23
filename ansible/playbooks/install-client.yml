@@ -1,5 +1,5 @@
 ---
-- name: Playbook to provision IPA host groups
+- name: Playbook to provision FreeIPA host groups
   hosts: ipaserver:ipareplicas
   become: true
   gather_facts: false
@@ -20,7 +20,7 @@
       loop_control:
         loop_var: ipa_host_name
 
-- name: Playbook to install IPA clients
+- name: Playbook to install FreeIPA clients
   hosts: ipaclients
   become: true
   serial: 1

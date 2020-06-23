@@ -39,7 +39,7 @@ Example of how to use this playbook.
 
 [source,yaml]
 ----
-- name: Playbook to provision IPA users
+- name: Playbook to provision FreeIPA users
   hosts: ipaserver:ipareplicas
   become: true
   gather_facts: false

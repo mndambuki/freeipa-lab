@@ -1,5 +1,5 @@
 ---
-- name: Playbook to provision IPA hosts
+- name: Playbook to provision FreeIPA hosts
   hosts: ipaserver:ipareplicas
   become: true
   gather_facts: false
