@@ -5,8 +5,6 @@
   gather_facts: false
   run_once: true
   tasks:
-    - debug:
-        msg: "{{ ipaserver_domain | urlencode }} ldap://{{ groups.ipaserver[0] }}"
     - name: Ensure LDAP system account {{ ldap_account.name }} exists
       vars:
         ldap_url: ldap://{{ groups.ipaserver[0] }}
