@@ -8,29 +8,32 @@ A description of the settable variables for this role should go here, including 
 
 [cols="1,1,1,4",align="center",options="header",]
 |===
-| *Name*                     | *Type* | *Mandatory* | *Description*
-| ipaadmin_principal         | string | yes         | User to authenticate against FreeIPA
-| ipaadmin_password          | string | yes         | Password to authenticate against FreeIPA
-| ipa_user                   | dict   | yes         | Contains the new FreeIPA user information
-| ipa_user.name              | string | yes         | Username for the new user
-| ipa_user.first             | string | yes         | Principal name for the new user
-| ipa_user.last              | string | yes         | Surname for the new user
-| ipa_user.shell             | string | yes         | Unix login shell
-| ipa_user.sshpubkey         | list   | no          | Public keys for SSH authentication
-| ipa_user.groups            | list   | no          | Groups the user belong to
-| ipa_user.roles             | list   | no          | RBAC roles for the new user
-| ipa_user.expirepassword    | bool   | no          | Expire password on user creation
-| ipa_user.email             | string | no          | Email for the new user
-| ipa_user.phone             | string | no          | Phone number for the new user
-| ipa_user.employeetype      | string | no          | Employee type for the new user
-| ipa_user.employeenumber    | string | no          | Employee number for the new user
-| ipa_user.departmentnumber  | string | no          | Department number for the new user
-| ipa_user.orgunit           | string | no          | Organizational unit for the new user
-| ipa_user.city              | string | no          | City for the new user
-| ipa_user.postalcode        | string | no          | Postal code for the new user
-| ipa_user.preferredlanguage | string | no          | Preferred language for the new user
-| ipa_user.state             | string | no          | Manage the user lifecycle (present, absent disable)
-| ipa_user_password_to_file  | bool   | no          | Save user password in a file
+| *Name*                         | *Type* | *Mandatory* | *Description*
+| ipaadmin_principal             | string | yes         | User to authenticate against FreeIPA
+| ipaadmin_password              | string | yes         | Password to authenticate against FreeIPA
+| ipa_user                       | dict   | yes         | Contains the new FreeIPA user information
+| ipa_user.name                  | string | yes         | Username for the new user
+| ipa_user.first                 | string | yes         | Principal name for the new user
+| ipa_user.last                  | string | yes         | Surname for the new user
+| ipa_user.shell                 | string | yes         | Unix login shell
+| ipa_user.sshpubkey             | list   | no          | Public keys for SSH authentication
+| ipa_user.groups                | list   | no          | Groups the user belong to
+| ipa_user.roles                 | list   | no          | RBAC roles for the new user
+| ipa_user.expirepassword        | bool   | no          | Expire password on user creation
+| ipa_user.email                 | string | no          | Email for the new user
+| ipa_user.phone                 | string | no          | Phone number for the new user
+| ipa_user.employeetype          | string | no          | Employee type for the new user
+| ipa_user.employeenumber        | string | no          | Employee number for the new user
+| ipa_user.departmentnumber      | string | no          | Department number for the new user
+| ipa_user.orgunit               | string | no          | Organizational unit for the new user
+| ipa_user.city                  | string | no          | City for the new user
+| ipa_user.postalcode            | string | no          | Postal code for the new user
+| ipa_user.preferredlanguage     | string | no          | Preferred language for the new user
+| ipa_user.state                 | string | no          | Manage the user lifecycle (present, absent disable)
+| ipa_user_password_to_file      | bool   | no          | Save user password in a file
+| ipa_user_password_to_file_path | string | no          | File to store the initial password
+| ipa_user_password_to_pass      | bool   | no          | Save user password in password manager (aka pass)
+| ipa_user_password_to_pass_path | string | no          | Password manager path to store the initial password
 |===
 
 == Example Playbook
