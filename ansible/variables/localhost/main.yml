@@ -27,3 +27,7 @@ ipa_user_password_to_pass_path: freeipa/localhost
 # Host provisioning parameters
 ipa_host_otp_to_file: yes
 ipa_host_otp_to_file_path: ../host-auth.log
+
+# LDAP accounts parameters
+ldap_account_password_to_file: yes
+ldap_account_password_to_file_path: ../ldap-auth.log

@@ -59,6 +59,7 @@ certificate.csr
 # Debug files
 user-auth.log
 host-auth.log
+ldap-auth.log
 
 # Keep files
 !*.gitkeep

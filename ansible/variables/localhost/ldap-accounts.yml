@@ -1,0 +1,3 @@
+ipa_ldap_accounts:
+  - name: bind-test
+    description: LDAP bind account for testing purposes

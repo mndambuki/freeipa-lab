@@ -271,7 +271,35 @@ sudo vi -c '!bash'
 
 == LDAP clients integration
 
-TODO:
+Create LDAP bind accounts.
+
+[source,bash]
+----
+ansible-playbook ansible/playbooks/provision-ldap-accounts.yml \
+    --inventory ansible/inventory/localhost.yml \
+    --extra-vars "@ansible/variables/localhost/main.yml" \
+    --extra-vars "@ansible/variables/localhost/ldap-accounts.yml"
+----
+
+Find users in FreeIPA LDAP.
+
+[source,bash]
+----
+ldapsearch -W -H ldap://ipaserver.test.local \
+    -D "uid=bind-test,cn=sysaccounts,cn=etc,dc=test,dc=local" \
+    -b "cn=users,cn=accounts,dc=test,dc=local" \
+    -s one "(objectClass=inetorgperson)"
+----
+
+Find groups in FreeIPA LDAP.
+
+[source,bash]
+----
+ldapsearch -W -H ldap://ipaserver.test.local \
+    -D "uid=bind-test,cn=sysaccounts,cn=etc,dc=test,dc=local" \
+    -b "cn=groups,cn=accounts,dc=test,dc=local" \
+    -s one "(objectClass=posixgroup)"
+----
 
 == Disaster recovery
 
@@ -310,3 +338,4 @@ pass freeipa/localhost/ipadm/password
 - https://github.com/freeipa/ansible-freeipa
 - https://blog.delouw.ch/2018/07/02/centrally-manage-selinux-user-mapping-with-freeipa
 - https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html-single/using_selinux/index
+- https://www.freeipa.org/page/HowTo/LDAP

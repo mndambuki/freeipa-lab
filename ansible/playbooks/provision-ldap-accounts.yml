@@ -1,0 +1,23 @@
+---
+- name: Playbook to provision FreeIPA LDAP accounts
+  hosts: ipaserver:ipareplicas
+  become: false
+  gather_facts: false
+  run_once: true
+  tasks:
+    - debug:
+        msg: "{{ ipaserver_domain | urlencode }} ldap://{{ groups.ipaserver[0] }}"
+    - name: Ensure LDAP system account {{ ldap_account.name }} exists
+      vars:
+        ldap_url: ldap://{{ groups.ipaserver[0] }}
+        ldap_start_tls: yes
+        ldap_bind_dn: cn=Directory Manager
+        ldap_bind_password: "{{ ipadm_password }}"
+        ldap_base_dn: cn=sysaccounts,cn=etc,dc={{ ipaserver_domain.split('.') | join(',dc=') }}
+        ldap_account: "{{ ipa_ldap_account }}"
+      include_role:
+        name: ldap-account
+      loop:
+        "{{ ipa_ldap_accounts }}"
+      loop_control:
+        loop_var: ipa_ldap_account

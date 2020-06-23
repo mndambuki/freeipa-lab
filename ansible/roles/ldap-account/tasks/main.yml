@@ -1,0 +1,46 @@
+---
+- name: Print LDAP information
+  debug:
+    msg: Creating LDAP bind account {{ ldap_account.name }} in DN {{ ldap_base_dn }}
+    verbosity: 1
+
+- name: Generate a password for the LDAP account {{ ldap_account.name }}
+  set_fact:
+    ldap_account_password: "{{ lookup('password', '/dev/null length=16 chars=ascii_letters') }}"
+    ldap_account_password_expiration: "20380119031407Z"
+
+- name: Set default state for LDAP account {{ ldap_account.name }}
+  set_fact:
+    ldap_account_state: "{{ ldap_account.state | default('present') }}"
+
+- name: Create LDAP account {{ ldap_account.name }}
+  ldap_entry:
+    server_uri: "{{ ldap_url }}"
+    start_tls: "{{ ldap_start_tls }}"
+    bind_dn: "{{ ldap_bind_dn }}"
+    bind_pw: "{{ ldap_bind_password }}"
+    dn: "uid={{ ldap_account.name }},{{ ldap_base_dn }}"
+    objectClass:
+      - account
+      - simpleSecurityObject
+    attributes:
+      uid: "{{ ldap_account.name }}"
+      description: "{{ ldap_account.description | default('LDAP bind account') }}"
+      userPassword: "{{ ldap_account_password }}"
+      passwordExpirationTime: "{{ ldap_account_password_expiration | default(omit) }}"
+      nsIdleTimeout: 0
+    state: "{{ ldap_account_state }}"
+  register: ldap_account_status
+
+- name: Retrieve the password to the LDAP account {{ ldap_account.name }}
+  become: no
+  delegate_to: localhost
+  block:
+    - name: Save the password for the user {{ ldap_account.name }} into a file
+      include_tasks: send_password_to_file.yml
+      when:
+        - ldap_account_password_to_file is defined
+        - ldap_account_password_to_file
+  when:
+    - ldap_account_status.changed
+    - ldap_account_state == 'present'
