@@ -1,6 +1,6 @@
 = ipahost
 
-Create a new host generating an OTP for enrollment and add it to the corresponding groups.
+Create a new group and manage its membership and RBAC.
 
 == Role Variables
 
@@ -11,11 +11,11 @@ A description of the settable variables for this role should go here, including 
 | *Name*                     | *Type* | *Mandatory* | *Description*
 | ipaadmin_principal         | string | yes         | User to authenticate against FreeIPA
 | ipaadmin_password          | string | yes         | Password to authenticate against FreeIPA
-| ipa_host                   | dict   | yes         | Contains the new FreeIPA host information
-| ipa_host.name              | string | yes         | FQDN for the new host
-| ipa_host.groups            | list   | no          | Groups the host belongs to
-| ipa_host_otp_to_file       | bool   | no          | Flag to store OTP in a file
-| ipa_host_otp_to_file_path  | string | no          | File to store the generated OTP for each host
+| ipa_group                  | dict   | yes         | Contains the new FreeIPA group information
+| ipa_group.name             | string | yes         | FQDN for the new group
+| ipa_group.description      | string | no          | A description of this role-group
+| ipa_group.groups           | list   | no          | List of subgroups assign to this group
+| ipa_group.roles            | list   | no          | List of roles assign to this group
 |===
 
 == Example Playbook
@@ -24,17 +24,17 @@ Example of how to use this role.
 
 [source,yaml]
 ----
-- name: Playbook to provision FreeIPA hosts
+- name: Playbook to provision FreeIPA groups
   hosts: ipaserver:ipareplicas
   become: true
   gather_facts: false
   run_once: true
   tasks:
-    - name: Provision FreeIPA hosts
+    - name: Provision FreeIPA groups
       vars:
         ipaadmin_principal: "{{ ipaadmin_principal }}"
         ipaadmin_password: "{{ ipaadmin_password }}"
-        ipa_host: "{{ new_ipa_host }}"
+        ipa_group: "{{ new_ipa_group }}"
       include_role:
-        name: ipahost
+        name: ipa_group
 ----

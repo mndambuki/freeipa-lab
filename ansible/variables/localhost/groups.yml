@@ -5,6 +5,8 @@ ipa_groups:
 
   - name: sysadmins
     description: Group for system administrators
+    roles:
+      - User Administrator
     state: present
 
   - name: dbas

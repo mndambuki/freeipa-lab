@@ -1,0 +1,44 @@
+---
+- name: Create group {{ ipa_group.name }}
+  ipa_group:
+    ipa_host: localhost
+    ipa_user: "{{ ipaadmin_principal | default(omit) }}"
+    ipa_pass: "{{ ipaadmin_password | mandatory }}"
+    validate_certs: no
+    name: "{{ ipa_group.name | mandatory }}"
+    description: "{{ ipa_group.description | default(omit) }}"
+    group: "{{ ipa_group.groups | default([]) }}"
+  register: ipa_group_info
+
+- name: Manage roles for the group {{ ipa_group.name }}
+  block:
+    - name: Get roles current state for the group {{ ipa_group.name }}
+      set_fact:
+        ipa_group_roles_now: "{{ ipa_group_info.group.memberof_role | default([]) }}"
+        ipa_group_roles_desired: "{{ ipa_group.roles | default([]) }}"
+
+    - name: Print current roles for the group {{ ipa_group.name }}
+      debug:
+        msg:
+          - The group owns the roles {{ ipa_group_roles_now }}
+          - The group will own the roles {{ ipa_group_roles_desired }}
+        verbosity: 1
+
+    - name: Get roles drift for the group {{ ipa_group.name }}
+      set_fact:
+        ipa_group_roles_to_add: "{{ ipa_group_roles_desired | difference(ipa_group_roles_now) }}"
+        ipa_group_roles_to_del: "{{ ipa_group_roles_now | difference(ipa_group_roles_desired) }}"
+
+    - name: Add new roles to the group {{ ipa_group.name }}
+      include_tasks: add_role_to_group.yml
+      loop:
+        "{{ ipa_group_roles_to_add | default([]) }}"
+      loop_control:
+        loop_var: ipa_group_role
+
+    - name: Delete old roles from the group {{ ipa_group.name }}
+      include_tasks: delete_role_from_group.yml
+      loop:
+        "{{ ipa_group_roles_to_del | default([]) }}"
+      loop_control:
+        loop_var: ipa_group_role

@@ -1,0 +1,17 @@
+---
+- name: Check if ipa_group variable is defined
+  fail:
+    msg: "ipa_group variable is not defined, check README.md"
+  when: ipa_group is not defined
+
+- name: Include tasks for creating the group {{ ipa_group.name }}
+  include_tasks: create_group.yml
+  when: >
+    ipa_group.state is not defined or
+    ipa_group.state == "present"
+
+- name: Include tasks for deleting the group {{ ipa_group.name }}
+  include_tasks: delete_group.yml
+  when:
+    - ipa_group.state is defined
+    - ipa_group.state != "present"

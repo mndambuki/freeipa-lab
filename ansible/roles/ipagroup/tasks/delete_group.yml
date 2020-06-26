@@ -1,0 +1,9 @@
+---
+- name: Delete group {{ ipa_group.name }}
+  ipa_group:
+    ipa_host: localhost
+    ipa_user: "{{ ipaadmin_principal | default(omit) }}"
+    ipa_pass: "{{ ipaadmin_password | mandatory }}"
+    validate_certs: no
+    name: "{{ ipa_group.name | mandatory }}"
+    state: "{{ ipa_group.state | mandatory }}"

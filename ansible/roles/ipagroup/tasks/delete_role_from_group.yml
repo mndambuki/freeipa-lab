@@ -1,0 +1,18 @@
+---
+- name: Get information for the role {{ ipa_group_role }}
+  ipa_role:
+    ipa_host: localhost
+    ipa_user: "{{ ipaadmin_principal | default(omit) }}"
+    ipa_pass: "{{ ipaadmin_password | mandatory }}"
+    validate_certs: no
+    name: "{{ ipa_group_role }}"
+  register: ipa_role_info
+
+- name: Delete role {{ ipa_group_role }} from the group {{ ipa_group.name }}
+  ipa_role:
+    ipa_host: localhost
+    ipa_user: "{{ ipaadmin_principal | default(omit) }}"
+    ipa_pass: "{{ ipaadmin_password | mandatory }}"
+    validate_certs: no
+    name: "{{ ipa_group_role }}"
+    group: "{{ ipa_role_info.role.member_group | difference([ ipa_group.name ]) }}"
