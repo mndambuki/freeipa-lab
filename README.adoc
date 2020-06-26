@@ -311,7 +311,7 @@ Perform a full backup.
 
 [source,bash]
 ----
-ansible-playbook ansible/playbooks/backup-server.yml \
+ansible-playbook ansible/playbooks/dr-backup-server.yml \
     --inventory ansible/inventory/localhost.yml \
     --extra-vars "@ansible/variables/localhost/main.yml" \
     --extra-vars "ipa_backup_type=full"
@@ -321,7 +321,7 @@ Perform a data-only backup.
 
 [source,bash]
 ----
-ansible-playbook ansible/playbooks/backup-server.yml \
+ansible-playbook ansible/playbooks/dr-backup-server.yml \
     --inventory ansible/inventory/localhost.yml \
     --extra-vars "@ansible/variables/localhost/main.yml" \
     --extra-vars "ipa_backup_type=data-only"
