@@ -1,0 +1,46 @@
+= ldap-account
+
+Create an LDAP account for binding.
+
+== Role Variables
+
+A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+
+[cols="1,1,1,4",align="center",options="header",]
+|===
+| *Name*                   | *Type* | *Mandatory* | *Description*
+| ldap_url                 | string | yes         | URL of LDAP server (e.g ldaps://ldap.test.local:636)
+| ldap_start_tls           | bool   | no          | Use STARTTLS
+| ldap_bind_dn             | string | no          | The DN for the bind user
+| ldap_bind_password       | string | yes         | The password for the bind user
+| ldap_base_dn             | string | yes         | The search base
+| ldap_account             | dict   | yes         | LDAP account to be created
+| ldap_account.name        | string | yes         | Name for the new account
+| ldap_account.description | string | no          | Description for the new account
+|===
+
+== Example Playbook
+
+Example of how to use this role.
+
+[source,yaml]
+----
+- name: Playbook to provision FreeIPA LDAP accounts
+  hosts: ipaserver:ipareplicas
+  become: false
+  gather_facts: false
+  run_once: true
+  tasks:
+    - name: Ensure LDAP system account exists
+      vars:
+        ldap_url: ldap://ldap.test.local:389
+        ldap_start_tls: yes
+        ldap_bind_dn: cn=Directory Manager
+        ldap_bind_password: s3cr3t!
+        ldap_base_dn: cn=sysaccounts,cn=etc,dc=test,dc=local
+        ldap_account:
+            name: example
+            description: This is an example
+      include_role:
+        name: ldap-account
+----

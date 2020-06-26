@@ -1,4 +1,4 @@
-= ipahost
+= ipagroup
 
 Create a new group and manage its membership and RBAC.
 

@@ -16,7 +16,7 @@
 - name: Create LDAP account {{ ldap_account.name }}
   ldap_entry:
     server_uri: "{{ ldap_url }}"
-    start_tls: "{{ ldap_start_tls }}"
+    start_tls: "{{ ldap_start_tls | default('false') | bool }}"
     bind_dn: "{{ ldap_bind_dn }}"
     bind_pw: "{{ ldap_bind_password }}"
     dn: "uid={{ ldap_account.name }},{{ ldap_base_dn }}"
