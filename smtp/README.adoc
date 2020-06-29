@@ -1,0 +1,35 @@
+# SMTP Server
+
+Deploy an SMTP server in a container using `+podman+`.
+
+[source,bash]
+----
+podman run --rm -d \
+    --name smtp-server \
+    --volume "$(pwd)/smtp/application.properties:/opt/configuration/application.properties" \
+    --publish 5025:5025 \
+    --publish 5080:5080 \
+    --publish 5081:5081 \
+    docker.io/gessnerfl/fake-smtp-server:1.5.0
+----
+
+Stop SMTP server.
+
+[source,bash]
+----
+podman stop smtp-server
+----
+
+## Configuration
+
+The server configuration is stored in the `+application.properties+` file.
+
+[source,bash]
+----
+include::application.properties[]
+----
+
+## References
+
+- https://github.com/gessnerfl/fake-smtp-server
+- https://hub.docker.com/r/gessnerfl/fake-smtp-server
