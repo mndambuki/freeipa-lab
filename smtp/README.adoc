@@ -6,7 +6,8 @@ Deploy an SMTP server in a container using `+podman+`.
 ----
 podman run --rm -d \
     --name smtp-server \
-    --volume "$(pwd)/smtp/application.properties:/opt/configuration/application.properties" \
+    --volume "$(pwd)/smtp/application.properties:/opt/configuration/application.properties":ro,Z \
+    --env "JAVA_OPTS=-Dspring.config.location=/opt/configuration/application.properties" \
     --publish 5025:5025 \
     --publish 5080:5080 \
     --publish 5081:5081 \
