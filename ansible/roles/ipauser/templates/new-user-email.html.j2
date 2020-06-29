@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>You have been registered in FreeIPA</title>
+  </head>
+  <body class="">
+    <p>
+      You have been registered in FreeIPA, to finish the registration process go to the <a href="https://{{ ipa_url }}/ipa/ui/">FreeIPA console</a> and change your password:
+      <ul>
+        <li><strong>Username</strong>: {{ ipa_user.name }}</li>
+        <li><strong>Password</strong>: {{ ipa_user_password }}</li>
+      </ul>
+    </p>
+  </body>
+</html>

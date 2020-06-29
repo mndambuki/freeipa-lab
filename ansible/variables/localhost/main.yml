@@ -11,6 +11,9 @@ ipaadmin_password:
 ipadm_password:
   "{{ lookup('passwordstore', 'freeipa/localhost/ipadm/password create=true length=32 nosymbols=yes') }}"
 
+# Public console configuration
+ipa_url: ipaserver.test.local
+
 # NTP configuration
 ipaclient_no_ntp: no
 
@@ -23,6 +26,13 @@ ipa_user_password_to_file_path: ../user-auth.log
 
 ipa_user_password_to_pass: yes
 ipa_user_password_to_pass_path: freeipa/localhost
+
+ipa_user_password_to_smtp: yes
+ipa_user_password_to_smtp_config:
+  host: localhost
+  port: 5025
+  user: smtp-user
+  pass: smtp-pass
 
 # Host provisioning configuration
 ipa_host_otp_to_file: yes

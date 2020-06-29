@@ -140,5 +140,13 @@
       when:
         - ipa_user_password_to_pass is defined
         - ipa_user_password_to_pass
+
+    - name: Send the password for the user {{ ipa_user.name }} to SMTP
+      vars:
+        smtp_server: "{{ ipa_user_password_to_smtp_config }}"
+      include_tasks: send_password_to_smtp.yml
+      when:
+        - ipa_user_password_to_smtp is defined
+        - ipa_user_password_to_smtp
   when:
     - ipa_user_exists.failed
