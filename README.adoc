@@ -329,11 +329,32 @@ ansible-playbook ansible/playbooks/dr-backup-server.yml \
 
 === Restore
 
-Copy backup to FreeIPA server and restore using `+ipa-restore+` utility.
+Perform a full restore.
 
 [source,bash]
 ----
-ipa-restore ${IPA_BACKUP_PATH}
+export IPA_BACKUP_SRC_NAME="/tmp/ipa/ipaserver-test-local-ipa-full-YYYY-MM-DD-hh-mm-ss.gz"
+
+ansible-playbook ansible/playbooks/dr-restore-server.yml \
+    --inventory ansible/inventory/localhost.yml \
+    --extra-vars "@ansible/variables/localhost/main.yml" \
+    --extra-vars "ipa_restore_type=full" \
+    --extra-vars "ipa_healthy_member=ipaserver" \
+    --extra-vars "ipa_backup_src_name=${IPA_BACKUP_SRC_NAME}"
+----
+
+Perform a data-only restore.
+
+[source,bash]
+----
+export IPA_BACKUP_SRC_NAME="/tmp/ipa/ipaserver-test-local-ipa-full-YYYY-MM-DD-hh-mm-ss.gz"
+
+ansible-playbook ansible/playbooks/dr-restore-server.yml \
+    --inventory ansible/inventory/localhost.yml \
+    --extra-vars "@ansible/variables/localhost/main.yml" \
+    --extra-vars "ipa_restore_type=data-only" \
+    --extra-vars "ipa_healthy_member=ipaserver" \
+    --extra-vars "ipa_backup_src_name=${IPA_BACKUP_SRC_NAME}"
 ----
 
 == Troubleshooting

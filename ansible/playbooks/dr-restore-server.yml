@@ -1,0 +1,80 @@
+---
+- name: Playbook to perform FreeIPA restore
+  hosts: "{{ ipa_healthy_member | mandatory }}"
+  become: true
+  gather_facts: false
+  vars:
+    ipa_restore_dst_folder: /var/lib/ipa/backup
+  tasks:
+    - name: Check if ipa_restore_type is defined
+      fail:
+        msg: "The value for ipa_restore_type is not supported or not defined, only full or data-only options are available."
+      when: >
+        ipa_restore_type is not defined or
+        (
+          ipa_restore_type != "full" and
+          ipa_restore_type != "data-only"
+        )
+
+    - name: Set flags for data-only restore
+      set_fact:
+        ipa_restore_options: --online
+      when:
+        - ipa_restore_type == "data-only"
+
+    - name: Copy and unarchive backup in a healthy member
+      unarchive:
+        src: "{{ ipa_backup_src_name }}"
+        dest: "{{ ipa_restore_dst_folder }}"
+        owner: root
+        group: root
+        mode: '0700'
+      register: ipa_backup_content
+
+    - name: Get list of last backups in {{ ipa_restore_dst_folder }} folder
+      find:
+        paths: "{{ ipa_restore_dst_folder }}"
+        file_type: directory
+        age: -1h
+      register: ipa_backup_files
+
+    - name: Get latest backup
+      set_fact:
+        ipa_backup_latest: "{{ ipa_backup_files.files | sort(attribute='mtime', reverse=true) | first }}"
+
+    - name: Get full path for the latest backup
+      set_fact:
+        ipa_backup_path: "{{ ipa_backup_latest.path }}"
+
+    - name: Restore backup from folder {{ ipa_backup_path }}
+      no_log: to true
+      command: >
+        ipa-restore {{ ipa_restore_options | default() }} --unattended --password "{{ ipadm_password }}" "{{ ipa_backup_path }}"
+
+    - name: Clean up SSSD cache
+      block:
+        - name: Stop the SSSD service
+          service:
+            name: sssd
+            state: stopped
+
+        - name: Remove all cached content from SSSD
+          shell: find /var/lib/sss/ ! -type d | xargs rm -f
+          args:
+            executable: /bin/bash
+
+        - name: Ensure SSSD service is started
+          service:
+            name: sssd
+            state: started
+      when:
+        - ipa_restore_type == "full"
+
+    - name: Prune backup files
+      file:
+        path: "{{ ipa_backup_file }}"
+        state: absent
+      loop:
+        - "{{ ipa_backup_path }}/"
+      loop_control:
+        loop_var: ipa_backup_file
