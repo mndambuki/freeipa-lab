@@ -8,6 +8,10 @@
     name: "{{ ipa_user_role }}"
   register: ipa_role_info
 
+- name: Get users for the role {{ ipa_user_role }}
+  set_fact:
+    ipa_role_members: "{{ ipa_role_info.role.member_user | default([]) }}"
+
 - name: Delete role {{ ipa_user_role }} from the user {{ ipa_user.name }}
   ipa_role:
     ipa_host: localhost
@@ -15,4 +19,6 @@
     ipa_pass: "{{ ipaadmin_password | mandatory }}"
     validate_certs: no
     name: "{{ ipa_user_role }}"
-    user: "{{ ipa_role_info.role.member_user | difference([ ipa_user.name ]) }}"
+    user: "{{ ipa_role_members | difference([ ipa_user.name ]) }}"
+  when:
+    - ipa_user.name in ipa_role_members
