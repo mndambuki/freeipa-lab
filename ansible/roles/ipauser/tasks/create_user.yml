@@ -13,7 +13,6 @@
 - name: Generate a password for the user {{ ipa_user.name }}
   set_fact:
     ipa_user_password: "{{ lookup('password', '/dev/null length=16 chars=ascii_letters') }}"
-    ipa_user_password_expiration: "1990-01-01 00:00:00" # The password is expired on creation
   when:
     - ipa_user_exists.failed
 
@@ -25,7 +24,7 @@
     first: "{{ ipa_user.first | mandatory }}"
     last: "{{ ipa_user.last | mandatory }}"
     password: "{{ ipa_user_password | default(omit) }}"
-    passwordexpiration: "{{ ipa_user_password_expiration | default(omit) }}"
+    passwordexpiration: "{{ '1990-01-01 00:00:00' if ipa_user_exists.failed else omit }}"
     update_password: on_create
     userauthtype: password
     shell: "{{ ipa_user.shell | default(omit) }}"
