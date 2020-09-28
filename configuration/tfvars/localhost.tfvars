@@ -1,6 +1,6 @@
 libvirt = {
   pool      = "freeipa"
-  pool_path = "storage/volumes/freeipa"
+  pool_path = "/var/lib/libvirt/images/freeipa"
 }
 
 network = {

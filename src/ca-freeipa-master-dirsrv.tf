@@ -44,20 +44,14 @@ resource "tls_locally_signed_cert" "freeipa_master_dirsrv" {
 }
 
 resource "local_file" "freeipa_master_dirsrv_certificate_pem" {
-
-  count = var.DEBUG ? 1 : 0
-
-  filename             = format("%s/ca/clients/freeipa-dirsrv/master/certificate.pem", path.module)
+  filename             = "output/ca/clients/freeipa-dirsrv/master/certificate.pem"
   content              = tls_locally_signed_cert.freeipa_master_dirsrv.cert_pem
   file_permission      = "0600"
   directory_permission = "0700"
 }
 
 resource "local_file" "freeipa_master_dirsrv_private_key_pem" {
-
-  count = var.DEBUG ? 1 : 0
-
-  filename             = format("%s/ca/clients/freeipa-dirsrv/master/private.key", path.module)
+  filename             = "output/ca/clients/freeipa-dirsrv/master/private.key"
   content              = tls_private_key.freeipa_master_dirsrv.private_key_pem
   file_permission      = "0600"
   directory_permission = "0700"

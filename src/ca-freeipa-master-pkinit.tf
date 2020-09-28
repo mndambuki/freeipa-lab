@@ -28,46 +28,41 @@ resource "tls_cert_request" "freeipa_master_pkinit" {
 }
 
 resource "local_file" "freeipa_master_pkinit_csr" {
-  filename             = format("%s/ca/clients/freeipa-pkinit/master/certificate.req", path.module)
+  filename             = "output/ca/clients/freeipa-pkinit/master/certificate.req"
   content              = tls_cert_request.freeipa_master_pkinit.cert_request_pem
   file_permission      = "0600"
   directory_permission = "0700"
-}
 
-resource "null_resource" "freeipa_master_pkinit_certificate" {
   provisioner "local-exec" {
     environment = {
       REALM = upper(var.dns.domain)
     }
 
-    command = format("openssl x509 -req -in %s -CA %s -CAkey %s -extfile %s -extensions kdc_cert -CAcreateserial -out %s -days 365 ",
-      local_file.freeipa_master_pkinit_csr.filename,
-      local_file.freeipa_root_ca_certificate_pem.filename,
-      local_file.freeipa_root_ca_private_key_pem.filename,
-      format("%s/ca/clients/freeipa-pkinit/extensions.conf", path.module),
-      format("%s/ca/clients/freeipa-pkinit/master/certificate.pem", path.module))
-  }
-
-  provisioner "local-exec" {
-    when    = destroy
-    command = format("rm -f %s/ca/clients/freeipa-pkinit/master/certificate.pem", path.module)
+    command = <<-EOF
+      openssl x509 -req \
+        -in ${self.filename} \
+        -CA ${local_file.freeipa_root_ca_certificate_pem.filename} \
+        -CAkey ${local_file.freeipa_root_ca_private_key_pem.filename} \
+        -extfile ${path.module}/ca/clients/freeipa-pkinit/extensions.conf \
+        -extensions kdc_cert \
+        -CAcreateserial \
+        -out "output/ca/clients/freeipa-pkinit/master/certificate.pem" \
+        -days 365
+    EOF
   }
 }
 
 data "local_file" "freeipa_master_pkinit_certificate_pem" {
-  filename = format("%s/ca/clients/freeipa-pkinit/master/certificate.pem", path.module)
+  filename = "output/ca/clients/freeipa-pkinit/master/certificate.pem"
 
   # TODO: Will work when https://github.com/hashicorp/terraform/pull/24904 is closed
   depends_on = [
-    null_resource.freeipa_master_pkinit_certificate
+    local_file.freeipa_master_pkinit_csr
   ]
 }
 
 resource "local_file" "freeipa_master_pkinit_private_key_pem" {
-
-  count = var.DEBUG ? 1 : 0
-
-  filename             = format("%s/ca/clients/freeipa-pkinit/master/private.key", path.module)
+  filename             = "output/ca/clients/freeipa-pkinit/master/private.key"
   content              = tls_private_key.freeipa_master_pkinit.private_key_pem
   file_permission      = "0600"
   directory_permission = "0700"

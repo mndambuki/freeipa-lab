@@ -37,16 +37,13 @@ resource "local_file" "freeipa_replica_pkinit_csr" {
 
   count = local.num_freeipa_replicas
 
-  filename             = format("%s/ca/clients/freeipa-pkinit/%s/certificate.req",
-    path.module, local.freeipa_replicas[count.index].hostname)
+  filename             = format(
+    "output/ca/clients/freeipa-pkinit/%s/certificate.req",
+    local.freeipa_replicas[count.index].hostname
+  )
   content              = tls_cert_request.freeipa_replica_pkinit[count.index].cert_request_pem
   file_permission      = "0600"
   directory_permission = "0700"
-}
-
-resource "null_resource" "freeipa_replica_pkinit_certificate" {
-
-  count = local.num_freeipa_replicas
 
   provisioner "local-exec" {
     environment = {
@@ -55,13 +52,13 @@ resource "null_resource" "freeipa_replica_pkinit_certificate" {
 
     command = <<-EOF
       openssl x509 -req \
-        -in ${local_file.freeipa_replica_pkinit_csr[count.index].filename} \
+        -in ${self.filename} \
         -CA ${local_file.freeipa_root_ca_certificate_pem.filename} \
         -CAkey ${local_file.freeipa_root_ca_private_key_pem.filename} \
-        -extfile ${abspath("ca/clients/freeipa-pkinit/extensions.conf")} \
+        -extfile ${path.module}/ca/clients/freeipa-pkinit/extensions.conf \
         -extensions kdc_cert \
         -CAcreateserial \
-        -out "ca/clients/freeipa-pkinit/${local.freeipa_replicas[count.index].hostname}/certificate.pem" \
+        -out "output/ca/clients/freeipa-pkinit/${local.freeipa_replicas[count.index].hostname}/certificate.pem" \
         -days 365
     EOF
   }
@@ -71,21 +68,25 @@ data "local_file" "freeipa_replica_pkinit_certificate_pem" {
 
   count = local.num_freeipa_replicas
 
-  filename = format("%s/ca/clients/freeipa-pkinit/%s/certificate.pem",
-    path.module, local.freeipa_replicas[count.index].hostname)
+  filename = format(
+    "output/ca/clients/freeipa-pkinit/%s/certificate.pem",
+    local.freeipa_replicas[count.index].hostname
+  )
 
   # TODO: Will work when https://github.com/hashicorp/terraform/pull/24904 is closed
   depends_on = [
-    null_resource.freeipa_replica_pkinit_certificate
+    local_file.freeipa_replica_pkinit_csr
   ]
 }
 
 resource "local_file" "freeipa_replica_pkinit_private_key_pem" {
 
-  count = var.DEBUG ? local.num_freeipa_replicas : 0
+  count = local.num_freeipa_replicas
 
-  filename             = format("%s/ca/clients/freeipa-pkinit/%s/private.key",
-    path.module, local.freeipa_replicas[count.index].hostname)
+  filename             = format(
+    "output/ca/clients/freeipa-pkinit/%s/private.key",
+    local.freeipa_replicas[count.index].hostname
+  )
   content              = tls_private_key.freeipa_replica_pkinit[count.index].private_key_pem
   file_permission      = "0600"
   directory_permission = "0700"

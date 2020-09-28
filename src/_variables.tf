@@ -1,9 +1,3 @@
-variable "DEBUG" {
-  description = "Enable debug mode"
-  type        = bool
-  default     = false
-}
-
 # Infrastructure environment
 variable "environment" {
   description = "Infrastructure environment"

@@ -1,8 +1,8 @@
 resource "libvirt_network" "freeipa" {
   name      = var.network.name
   domain    = var.dns.domain
-  mode      = "nat"
-  bridge    = "freeipavirbr0"
+  mode      = "route"
+  bridge    = "virbr-freeipa"
   mtu       = 1500
   addresses = [ var.network.subnet ]
   autostart = true

@@ -26,14 +26,14 @@ resource "tls_self_signed_cert" "freeipa_root_ca" {
 }
 
 resource "local_file" "freeipa_root_ca_certificate_pem" {
-  filename             = format("%s/ca/root-ca/certificate.pem", path.module)
+  filename             = "output/ca/root-ca/certificate.pem"
   content              = tls_self_signed_cert.freeipa_root_ca.cert_pem
   file_permission      = "0600"
   directory_permission = "0700"
 }
 
 resource "local_file" "freeipa_root_ca_private_key_pem" {
-  filename             = format("%s/ca/root-ca/private.key", path.module)
+  filename             = "output/ca/root-ca/private.key"
   content              = tls_private_key.freeipa_root_ca.private_key_pem
   file_permission      = "0600"
   directory_permission = "0700"
