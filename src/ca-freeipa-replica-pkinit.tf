@@ -53,20 +53,17 @@ resource "null_resource" "freeipa_replica_pkinit_certificate" {
       REALM = upper(var.dns.domain)
     }
 
-    command = format("openssl x509 -req -in %s -CA %s -CAkey %s -extfile %s -extensions kdc_cert -CAcreateserial -out %s -days 365 ",
-      local_file.freeipa_replica_pkinit_csr[count.index].filename,
-      local_file.freeipa_root_ca_certificate_pem.filename,
-      local_file.freeipa_root_ca_private_key_pem.filename,
-      format("%s/ca/clients/freeipa-pkinit/extensions.conf", path.module),
-      format("%s/ca/clients/freeipa-pkinit/%s/certificate.pem",
-        path.module, local.freeipa_replicas[count.index].hostname)
-    )
-  }
-
-  provisioner "local-exec" {
-    when    = destroy
-    command = format("rm -f %s/ca/clients/freeipa-pkinit/%s/certificate.pem",
-      path.module, local.freeipa_replicas[count.index].hostname)
+    command = <<-EOF
+      openssl x509 -req \
+        -in ${local_file.freeipa_replica_pkinit_csr[count.index].filename} \
+        -CA ${local_file.freeipa_root_ca_certificate_pem.filename} \
+        -CAkey ${local_file.freeipa_root_ca_private_key_pem.filename} \
+        -extfile ${abspath("ca/clients/freeipa-pkinit/extensions.conf")} \
+        -extensions kdc_cert \
+        -CAcreateserial \
+        -out "ca/clients/freeipa-pkinit/${local.freeipa_replicas[count.index].hostname}/certificate.pem" \
+        -days 365
+    EOF
   }
 }
 

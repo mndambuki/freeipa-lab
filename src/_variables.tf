@@ -4,6 +4,12 @@ variable "DEBUG" {
   default     = false
 }
 
+# Infrastructure environment
+variable "environment" {
+  description = "Infrastructure environment"
+  type        = string
+}
+
 # Libvirt configuration
 variable "libvirt" {
   description = "Libvirt configuration"
